@@ -1,0 +1,45 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+/dist
+/build
+/out
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# MongoDB
+*.log
+data/
+dump/
+*.bson
+*mongod*.log
+*mongos*.log
+
+# Environment variables
+.env
+.env.*
+
+# Misc
+.cache
+temp/
+tmp/

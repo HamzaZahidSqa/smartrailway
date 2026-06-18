@@ -1,0 +1,165 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "SmartRail" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e7]
+        - generic [ref=e9]: SmartRail
+      - generic [ref=e10]:
+        - link "Home" [ref=e11] [cursor=pointer]:
+          - /url: /
+        - link "Trains" [ref=e12] [cursor=pointer]:
+          - /url: /search
+        - link "PNR Status" [ref=e13] [cursor=pointer]:
+          - /url: /pnr-status
+        - link "My Bookings" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard
+        - button "Logout" [ref=e15] [cursor=pointer]
+  - main [ref=e16]:
+    - generic [ref=e100]:
+      - generic [ref=e101]:
+        - generic [ref=e102]:
+          - generic [ref=e103]: "1"
+          - generic [ref=e104]: Select Class
+        - generic [ref=e106]:
+          - generic [ref=e107]: "2"
+          - generic [ref=e108]: Select Seats
+        - generic [ref=e110]:
+          - generic [ref=e111]: "3"
+          - generic [ref=e112]: Passenger Details
+        - generic [ref=e114]:
+          - generic [ref=e115]: "4"
+          - generic [ref=e116]: Confirm & Pay
+      - generic [ref=e118]:
+        - img [ref=e119]
+        - text: Karachi Express (10001) | Karachi → Lahore | Tue Jun 23 2026 | 1 Pax
+      - generic [ref=e160]:
+        - heading "Select 1 Seat(s) — Economy (E1)" [level=2] [ref=e161]
+        - generic [ref=e162]:
+          - generic [ref=e163]:
+            - generic [ref=e164]: Available
+            - generic [ref=e166]: Booked
+            - generic [ref=e168]: Selected
+          - generic [ref=e170]:
+            - generic [ref=e171]:
+              - generic [ref=e172]: A
+              - generic [ref=e173]: B
+              - generic [ref=e174]: C
+              - generic [ref=e175]: D
+            - generic [ref=e176]:
+              - generic [ref=e177]: "1"
+              - button "A" [ref=e178] [cursor=pointer]
+              - button "B" [ref=e179] [cursor=pointer]
+              - button "C" [ref=e180] [cursor=pointer]
+              - button "D" [ref=e181] [cursor=pointer]
+            - generic [ref=e182]:
+              - generic [ref=e183]: "2"
+              - button "A" [ref=e184] [cursor=pointer]
+              - button "B" [ref=e185] [cursor=pointer]
+              - button "C" [ref=e186] [cursor=pointer]
+              - button "D" [ref=e187] [cursor=pointer]
+            - generic [ref=e188]:
+              - generic [ref=e189]: "3"
+              - button "B" [ref=e190] [cursor=pointer]
+              - button "C" [ref=e191] [cursor=pointer]
+              - button "D" [ref=e192] [cursor=pointer]
+              - button "A" [ref=e193] [cursor=pointer]
+            - generic [ref=e194]:
+              - generic [ref=e195]: "4"
+              - button "A" [ref=e196] [cursor=pointer]
+              - button "B" [ref=e197] [cursor=pointer]
+              - button "C" [ref=e198] [cursor=pointer]
+              - button "D" [ref=e199] [cursor=pointer]
+            - generic [ref=e200]:
+              - generic [ref=e201]: "5"
+              - button "A" [ref=e202] [cursor=pointer]
+              - button "B" [ref=e203] [cursor=pointer]
+              - button "C" [ref=e204] [cursor=pointer]
+              - button "D" [ref=e205] [cursor=pointer]
+            - generic [ref=e206]:
+              - generic [ref=e207]: "6"
+              - button "A" [ref=e208] [cursor=pointer]
+              - button "B" [ref=e209] [cursor=pointer]
+              - button "C" [ref=e210] [cursor=pointer]
+              - button "D" [ref=e211] [cursor=pointer]
+            - generic [ref=e212]:
+              - generic [ref=e213]: "7"
+              - button "A" [ref=e214] [cursor=pointer]
+              - button "B" [ref=e215] [cursor=pointer]
+              - button "C" [ref=e216] [cursor=pointer]
+              - button "D" [ref=e217] [cursor=pointer]
+            - generic [ref=e218]:
+              - generic [ref=e219]: "8"
+              - button "A" [ref=e220] [cursor=pointer]
+              - button "B" [ref=e221] [cursor=pointer]
+              - button "C" [ref=e222] [cursor=pointer]
+              - button "D" [ref=e223] [cursor=pointer]
+            - generic [ref=e224]:
+              - generic [ref=e225]: "9"
+              - button "A" [ref=e226] [cursor=pointer]
+              - button "B" [ref=e227] [cursor=pointer]
+              - button "C" [ref=e228] [cursor=pointer]
+              - button "D" [ref=e229] [cursor=pointer]
+            - generic [ref=e230]:
+              - generic [ref=e231]: "10"
+              - button "A" [ref=e232] [cursor=pointer]
+              - button "B" [ref=e233] [cursor=pointer]
+              - button "C" [ref=e234] [cursor=pointer]
+              - button "D" [ref=e235] [cursor=pointer]
+            - generic [ref=e236]:
+              - generic [ref=e237]: "11"
+              - button "A" [ref=e238] [cursor=pointer]
+              - button "B" [ref=e239] [cursor=pointer]
+              - button "C" [ref=e240] [cursor=pointer]
+              - button "D" [ref=e241] [cursor=pointer]
+            - generic [ref=e242]:
+              - generic [ref=e243]: "12"
+              - button "A" [ref=e244] [cursor=pointer]
+              - button "B" [ref=e245] [cursor=pointer]
+              - button "C" [ref=e246] [cursor=pointer]
+              - button "D" [ref=e247] [cursor=pointer]
+            - generic [ref=e248]:
+              - generic [ref=e249]: "13"
+              - button "A" [ref=e250] [cursor=pointer]
+              - button "B" [ref=e251] [cursor=pointer]
+              - button "C" [ref=e252] [cursor=pointer]
+              - button "D" [ref=e253] [cursor=pointer]
+            - generic [ref=e254]:
+              - generic [ref=e255]: "14"
+              - button "A" [ref=e256] [cursor=pointer]
+              - button "B" [ref=e257] [cursor=pointer]
+              - button "C" [ref=e258] [cursor=pointer]
+              - button "D" [ref=e259] [cursor=pointer]
+            - generic [ref=e260]:
+              - generic [ref=e261]: "15"
+              - button "A" [ref=e262] [cursor=pointer]
+              - button "B" [ref=e263] [cursor=pointer]
+              - button "C" [ref=e264] [cursor=pointer]
+              - button "D" [ref=e265] [cursor=pointer]
+            - generic [ref=e266]:
+              - generic [ref=e267]: "16"
+              - button "A" [ref=e268] [cursor=pointer]
+              - button "B" [ref=e269] [cursor=pointer]
+              - button "C" [ref=e270] [cursor=pointer]
+              - button "D" [ref=e271] [cursor=pointer]
+            - generic [ref=e272]:
+              - generic [ref=e273]: "17"
+              - button "A" [ref=e274] [cursor=pointer]
+              - button "B" [ref=e275] [cursor=pointer]
+              - button "C" [ref=e276] [cursor=pointer]
+              - button "D" [ref=e277] [cursor=pointer]
+            - generic [ref=e278]:
+              - generic [ref=e279]: "18"
+              - button "A" [ref=e280] [cursor=pointer]
+              - button "B" [ref=e281] [cursor=pointer]
+              - button "C" [ref=e282] [cursor=pointer]
+              - button "D" [ref=e283] [cursor=pointer]
+        - generic [ref=e284]:
+          - button "Back" [ref=e285] [cursor=pointer]
+          - button "Continue (0/1 selected)" [disabled] [ref=e286]
+  - contentinfo [ref=e34]:
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - img [ref=e37]
+        - generic [ref=e39]: Smart Railway Reservation System
+      - paragraph [ref=e40]: © 2026 SmartRail. All rights reserved.

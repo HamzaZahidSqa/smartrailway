@@ -1,0 +1,79 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "SmartRail" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e7]
+        - generic [ref=e9]: SmartRail
+      - button [ref=e345] [cursor=pointer]:
+        - img [ref=e346]
+  - main [ref=e16]:
+    - generic [ref=e403]:
+      - generic [ref=e404]:
+        - link "← My Bookings" [ref=e405] [cursor=pointer]:
+          - /url: /dashboard
+        - button "Print Ticket" [ref=e406] [cursor=pointer]:
+          - img [ref=e407]
+          - text: Print Ticket
+      - generic [ref=e409]:
+        - generic [ref=e410]:
+          - generic [ref=e411]:
+            - img [ref=e412]
+            - generic [ref=e414]: Smart Railway Reservation
+          - generic [ref=e415]: Confirmed
+        - generic [ref=e416]:
+          - generic [ref=e417]:
+            - paragraph [ref=e418]: PNR NUMBER
+            - paragraph [ref=e419]: PNR82105097EDR
+          - generic [ref=e420]:
+            - paragraph [ref=e421]: TICKET NO.
+            - paragraph [ref=e422]: TKT82105142D2
+            - paragraph [ref=e423]: "Issued: 6/18/2026, 4:28:25 PM"
+        - generic [ref=e424]:
+          - paragraph [ref=e425]: Train
+          - paragraph [ref=e426]:
+            - text: Karachi Express
+            - generic [ref=e427]: (#10001)
+        - generic [ref=e428]:
+          - generic [ref=e429]:
+            - paragraph [ref=e430]: Karachi
+            - paragraph [ref=e431]: 08:00
+          - generic [ref=e432]:
+            - paragraph [ref=e433]: Travel Date
+            - paragraph [ref=e434]: Tue Jun 23 2026
+            - img [ref=e438]
+          - generic [ref=e442]:
+            - paragraph [ref=e443]: Lahore
+            - paragraph [ref=e444]: 20:30
+        - generic [ref=e445]:
+          - generic [ref=e446]:
+            - paragraph [ref=e447]: Coach
+            - paragraph [ref=e448]: E1 — Economy
+          - generic [ref=e449]:
+            - paragraph [ref=e450]: Seats
+            - paragraph [ref=e451]: E1-1
+        - generic [ref=e452]:
+          - paragraph [ref=e453]: Passenger Details
+          - table [ref=e454]:
+            - rowgroup [ref=e455]:
+              - row "Name Age Gender Seat" [ref=e456]:
+                - columnheader "Name" [ref=e457]
+                - columnheader "Age" [ref=e458]
+                - columnheader "Gender" [ref=e459]
+                - columnheader "Seat" [ref=e460]
+            - rowgroup [ref=e461]:
+              - row "Ali Raza 28 Male E1-1" [ref=e462]:
+                - cell "Ali Raza" [ref=e463]
+                - cell "28" [ref=e464]
+                - cell "Male" [ref=e465]
+                - cell "E1-1" [ref=e466]
+        - generic [ref=e467]:
+          - generic [ref=e468]: Total Fare Paid
+          - generic [ref=e469]: ₹1200
+        - paragraph [ref=e470]: This is a computer-generated ticket. No signature required.
+  - contentinfo [ref=e34]:
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - img [ref=e37]
+        - generic [ref=e39]: Smart Railway Reservation System
+      - paragraph [ref=e40]: © 2026 SmartRail. All rights reserved.

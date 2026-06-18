@@ -1,0 +1,80 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "SmartRail" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e7]
+        - generic [ref=e9]: SmartRail
+      - generic [ref=e10]:
+        - link "Home" [ref=e11] [cursor=pointer]:
+          - /url: /
+        - link "Trains" [ref=e12] [cursor=pointer]:
+          - /url: /search
+        - link "PNR Status" [ref=e13] [cursor=pointer]:
+          - /url: /pnr-status
+        - link "My Bookings" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard
+        - button "Logout" [ref=e15] [cursor=pointer]
+  - main [ref=e16]:
+    - generic [ref=e100]:
+      - generic [ref=e101]:
+        - generic [ref=e102]:
+          - generic [ref=e103]: "1"
+          - generic [ref=e104]: Select Class
+        - generic [ref=e106]:
+          - generic [ref=e107]: "2"
+          - generic [ref=e108]: Select Seats
+        - generic [ref=e110]:
+          - generic [ref=e111]: "3"
+          - generic [ref=e112]: Passenger Details
+        - generic [ref=e114]:
+          - generic [ref=e115]: "4"
+          - generic [ref=e116]: Confirm & Pay
+      - generic [ref=e118]:
+        - img [ref=e119]
+        - text: Karachi Express (10001) | Karachi → Lahore | Tue Jun 23 2026 | 1 Pax
+      - generic [ref=e121]:
+        - heading "Select Coach Class" [level=2] [ref=e122]
+        - generic [ref=e123]:
+          - 'button "Economy ₹1200/seat Coach: E1 72 seats available Total: ₹1200" [ref=e124] [cursor=pointer]':
+            - generic [ref=e125]:
+              - generic [ref=e126]: Economy
+              - generic [ref=e127]: ₹1200/seat
+            - paragraph [ref=e128]: "Coach: E1"
+            - paragraph [ref=e129]:
+              - img [ref=e130]
+              - text: 72 seats available
+            - paragraph [ref=e132]: "Total: ₹1200"
+          - 'button "Sleeper ₹2500/seat Coach: S2 64 seats available Total: ₹2500" [ref=e133] [cursor=pointer]':
+            - generic [ref=e134]:
+              - generic [ref=e135]: Sleeper
+              - generic [ref=e136]: ₹2500/seat
+            - paragraph [ref=e137]: "Coach: S2"
+            - paragraph [ref=e138]:
+              - img [ref=e139]
+              - text: 64 seats available
+            - paragraph [ref=e141]: "Total: ₹2500"
+          - 'button "Business ₹4500/seat Coach: B3 48 seats available Total: ₹4500" [ref=e142] [cursor=pointer]':
+            - generic [ref=e143]:
+              - generic [ref=e144]: Business
+              - generic [ref=e145]: ₹4500/seat
+            - paragraph [ref=e146]: "Coach: B3"
+            - paragraph [ref=e147]:
+              - img [ref=e148]
+              - text: 48 seats available
+            - paragraph [ref=e150]: "Total: ₹4500"
+          - 'button "Executive ₹7500/seat Coach: E4 48 seats available Total: ₹7500" [ref=e151] [cursor=pointer]':
+            - generic [ref=e152]:
+              - generic [ref=e153]: Executive
+              - generic [ref=e154]: ₹7500/seat
+            - paragraph [ref=e155]: "Coach: E4"
+            - paragraph [ref=e156]:
+              - img [ref=e157]
+              - text: 48 seats available
+            - paragraph [ref=e159]: "Total: ₹7500"
+  - contentinfo [ref=e34]:
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - img [ref=e37]
+        - generic [ref=e39]: Smart Railway Reservation System
+      - paragraph [ref=e40]: © 2026 SmartRail. All rights reserved.

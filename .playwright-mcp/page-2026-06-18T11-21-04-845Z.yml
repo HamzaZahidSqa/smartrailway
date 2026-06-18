@@ -1,0 +1,116 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - generic [ref=e5]:
+        - link "SmartRail" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img [ref=e7]
+          - generic [ref=e9]: SmartRail
+        - generic [ref=e10]:
+          - link "Home" [ref=e11] [cursor=pointer]:
+            - /url: /
+          - link "Trains" [ref=e12] [cursor=pointer]:
+            - /url: /search
+          - link "PNR Status" [ref=e13] [cursor=pointer]:
+            - /url: /pnr-status
+          - link "Admin Panel" [ref=e45] [cursor=pointer]:
+            - /url: /admin
+          - button "Logout" [ref=e46] [cursor=pointer]
+    - main [ref=e16]:
+      - generic [ref=e47]:
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - heading "Admin Dashboard" [level=1] [ref=e50]
+            - paragraph [ref=e51]: Smart Railway Reservation System
+          - generic [ref=e52]:
+            - link "Manage Trains" [ref=e53] [cursor=pointer]:
+              - /url: /admin/trains
+              - img [ref=e54]
+              - text: Manage Trains
+            - link "Reports" [ref=e56] [cursor=pointer]:
+              - /url: /admin/reports
+              - img [ref=e57]
+              - text: Reports
+        - generic [ref=e59]:
+          - link "8 Total Trains" [ref=e60] [cursor=pointer]:
+            - /url: /admin/trains
+            - generic [ref=e61]: "8"
+            - generic [ref=e62]:
+              - img [ref=e63]
+              - text: Total Trains
+          - link "0 Total Bookings" [ref=e65] [cursor=pointer]:
+            - /url: /admin/bookings
+            - generic [ref=e66]: "0"
+            - generic [ref=e67]:
+              - img [ref=e68]
+              - text: Total Bookings
+          - link "₹0 Total Revenue" [ref=e70] [cursor=pointer]:
+            - /url: /admin/reports
+            - generic [ref=e71]: ₹0
+            - generic [ref=e72]:
+              - img [ref=e73]
+              - text: Total Revenue
+          - link "1 Active Users" [ref=e75] [cursor=pointer]:
+            - /url: /admin
+            - generic [ref=e76]: "1"
+            - generic [ref=e77]:
+              - img [ref=e78]
+              - text: Active Users
+          - link "0 Confirmed" [ref=e80] [cursor=pointer]:
+            - /url: /admin/bookings
+            - generic [ref=e81]: "0"
+            - generic [ref=e82]:
+              - img [ref=e83]
+              - text: Confirmed
+          - link "0 Cancelled" [ref=e85] [cursor=pointer]:
+            - /url: /admin/bookings
+            - generic [ref=e86]: "0"
+            - generic [ref=e87]:
+              - img [ref=e88]
+              - text: Cancelled
+        - generic [ref=e90]:
+          - link "🚄 Manage Trains Add, edit, delete trains" [ref=e91] [cursor=pointer]:
+            - /url: /admin/trains
+            - generic [ref=e92]: 🚄
+            - paragraph [ref=e93]: Manage Trains
+            - paragraph [ref=e94]: Add, edit, delete trains
+          - link "🚃 Manage Coaches Coach & seat management" [ref=e95] [cursor=pointer]:
+            - /url: /admin/coaches
+            - generic [ref=e96]: 🚃
+            - paragraph [ref=e97]: Manage Coaches
+            - paragraph [ref=e98]: Coach & seat management
+          - link "🎫 All Bookings View all reservations" [ref=e99] [cursor=pointer]:
+            - /url: /admin/bookings
+            - generic [ref=e100]: 🎫
+            - paragraph [ref=e101]: All Bookings
+            - paragraph [ref=e102]: View all reservations
+          - link "📊 Reports Revenue & analytics" [ref=e103] [cursor=pointer]:
+            - /url: /admin/reports
+            - generic [ref=e104]: 📊
+            - paragraph [ref=e105]: Reports
+            - paragraph [ref=e106]: Revenue & analytics
+        - generic [ref=e107]:
+          - generic [ref=e108]:
+            - heading "Recent Bookings" [level=2] [ref=e109]
+            - link "View All" [ref=e110] [cursor=pointer]:
+              - /url: /admin/bookings
+          - table [ref=e112]:
+            - rowgroup [ref=e113]:
+              - row "PNR Passenger Train Route Date Fare Status" [ref=e114]:
+                - columnheader "PNR" [ref=e115]
+                - columnheader "Passenger" [ref=e116]
+                - columnheader "Train" [ref=e117]
+                - columnheader "Route" [ref=e118]
+                - columnheader "Date" [ref=e119]
+                - columnheader "Fare" [ref=e120]
+                - columnheader "Status" [ref=e121]
+            - rowgroup [ref=e122]:
+              - row "No bookings yet" [ref=e123]:
+                - cell "No bookings yet" [ref=e124]
+    - contentinfo [ref=e38]:
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - img [ref=e41]
+          - generic [ref=e43]: Smart Railway Reservation System
+        - paragraph [ref=e44]: © 2026 SmartRail. All rights reserved.
+  - status [ref=e130]: Welcome back, Admin User!

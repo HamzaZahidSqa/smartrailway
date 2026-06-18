@@ -1,0 +1,71 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "SmartRail" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e7]
+        - generic [ref=e9]: SmartRail
+      - generic [ref=e10]:
+        - link "Home" [ref=e11] [cursor=pointer]:
+          - /url: /
+        - link "Trains" [ref=e12] [cursor=pointer]:
+          - /url: /search
+        - link "PNR Status" [ref=e13] [cursor=pointer]:
+          - /url: /pnr-status
+        - link "My Bookings" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard
+        - button "Logout" [ref=e15] [cursor=pointer]
+  - main [ref=e16]:
+    - generic [ref=e100]:
+      - generic [ref=e101]:
+        - generic [ref=e102]:
+          - generic [ref=e103]: "1"
+          - generic [ref=e104]: Select Class
+        - generic [ref=e106]:
+          - generic [ref=e107]: "2"
+          - generic [ref=e108]: Select Seats
+        - generic [ref=e110]:
+          - generic [ref=e111]: "3"
+          - generic [ref=e112]: Passenger Details
+        - generic [ref=e114]:
+          - generic [ref=e115]: "4"
+          - generic [ref=e116]: Confirm & Pay
+      - generic [ref=e118]:
+        - img [ref=e119]
+        - text: Karachi Express (10001) | Karachi → Lahore | Tue Jun 23 2026 | 1 Pax
+      - generic [ref=e315]:
+        - heading "Confirm Booking" [level=2] [ref=e316]
+        - generic [ref=e317]:
+          - generic [ref=e318]:
+            - heading "Journey Details" [level=3] [ref=e319]
+            - generic [ref=e320]:
+              - generic [ref=e321]: "Train:"
+              - generic [ref=e322]: Karachi Express
+              - generic [ref=e323]: "From → To:"
+              - generic [ref=e324]: Karachi → Lahore
+              - generic [ref=e325]: "Date:"
+              - generic [ref=e326]: Tue Jun 23 2026
+              - generic [ref=e327]: "Class:"
+              - generic [ref=e328]: Economy (E1)
+              - generic [ref=e329]: "Seats:"
+              - generic [ref=e330]: E1-1
+          - generic [ref=e331]:
+            - heading "Passengers" [level=3] [ref=e332]
+            - generic [ref=e333]:
+              - generic [ref=e334]: Ali Raza
+              - generic [ref=e335]: 28 yrs, Male
+              - generic [ref=e336]: E1-1
+          - generic [ref=e337]:
+            - generic [ref=e338]: Total Fare
+            - generic [ref=e339]: ₹1200
+        - generic [ref=e340]:
+          - button "Back" [ref=e341] [cursor=pointer]
+          - button "Pay ₹1200 & Book" [ref=e342] [cursor=pointer]:
+            - img [ref=e343]
+            - text: Pay ₹1200 & Book
+  - contentinfo [ref=e34]:
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - img [ref=e37]
+        - generic [ref=e39]: Smart Railway Reservation System
+      - paragraph [ref=e40]: © 2026 SmartRail. All rights reserved.

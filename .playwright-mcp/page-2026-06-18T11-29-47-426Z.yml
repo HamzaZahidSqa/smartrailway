@@ -1,0 +1,46 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "SmartRail" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e7]
+        - generic [ref=e9]: SmartRail
+      - button [ref=e10] [cursor=pointer]:
+        - img [ref=e11]
+  - main [ref=e13]:
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]: J
+        - generic [ref=e17]:
+          - heading "Welcome, John Doe" [level=1] [ref=e18]
+          - paragraph [ref=e19]: john@example.com
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - generic [ref=e22]: "0"
+          - generic [ref=e23]:
+            - img [ref=e24]
+            - text: Total Bookings
+        - generic [ref=e26]:
+          - generic [ref=e27]: "0"
+          - generic [ref=e28]:
+            - img [ref=e29]
+            - text: Upcoming Trips
+        - generic [ref=e31]:
+          - generic [ref=e32]: "0"
+          - generic [ref=e33]:
+            - img [ref=e34]
+            - text: Past Trips
+        - generic [ref=e36]:
+          - generic [ref=e37]: "0"
+          - generic [ref=e38]:
+            - img [ref=e39]
+            - text: Cancelled
+      - generic [ref=e41]:
+        - button "Upcoming Trips" [ref=e42] [cursor=pointer]
+        - button "Booking History" [ref=e43] [cursor=pointer]
+  - contentinfo [ref=e46]:
+    - generic [ref=e47]:
+      - generic [ref=e48]:
+        - img [ref=e49]
+        - generic [ref=e51]: Smart Railway Reservation System
+      - paragraph [ref=e52]: © 2026 SmartRail. All rights reserved.

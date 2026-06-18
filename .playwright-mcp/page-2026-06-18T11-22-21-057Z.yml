@@ -1,0 +1,38 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "SmartRail" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e7]
+        - generic [ref=e9]: SmartRail
+      - generic [ref=e10]:
+        - link "Home" [ref=e11] [cursor=pointer]:
+          - /url: /
+        - link "Trains" [ref=e12] [cursor=pointer]:
+          - /url: /search
+        - link "PNR Status" [ref=e13] [cursor=pointer]:
+          - /url: /pnr-status
+        - link "My Bookings" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard
+        - button "Logout" [ref=e15] [cursor=pointer]
+  - main [ref=e16]:
+    - generic [ref=e17]:
+      - generic [ref=e18]:
+        - img [ref=e19]
+        - generic [ref=e21]: Karachi → Lahore
+        - generic [ref=e22]: "|"
+        - generic [ref=e23]: Tue Jun 23 2026
+        - generic [ref=e24]: "|"
+        - generic [ref=e25]: 1 Passenger(s)
+      - generic [ref=e26]:
+        - button "All" [ref=e27] [cursor=pointer]
+        - button "Economy" [ref=e28] [cursor=pointer]
+        - button "Sleeper" [ref=e29] [cursor=pointer]
+        - button "Business" [ref=e30] [cursor=pointer]
+        - button "Executive" [ref=e31] [cursor=pointer]
+  - contentinfo [ref=e34]:
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - img [ref=e37]
+        - generic [ref=e39]: Smart Railway Reservation System
+      - paragraph [ref=e40]: © 2026 SmartRail. All rights reserved.

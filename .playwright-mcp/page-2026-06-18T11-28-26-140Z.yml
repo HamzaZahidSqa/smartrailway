@@ -1,0 +1,65 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - generic [ref=e5]:
+        - link "SmartRail" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img [ref=e7]
+          - generic [ref=e9]: SmartRail
+        - button [ref=e345] [cursor=pointer]:
+          - img [ref=e346]
+    - main [ref=e16]:
+      - generic [ref=e348]:
+        - generic [ref=e349]:
+          - img [ref=e350]
+          - heading "Booking Confirmed!" [level=1] [ref=e352]
+          - paragraph [ref=e353]: Your ticket has been booked successfully
+        - generic [ref=e354]:
+          - generic [ref=e355]:
+            - generic [ref=e356]:
+              - paragraph [ref=e357]: PNR Number
+              - paragraph [ref=e358]: PNR82105097EDR
+            - generic [ref=e359]:
+              - paragraph [ref=e360]: Ticket No.
+              - paragraph [ref=e361]: TKT82105142D2
+            - generic [ref=e362]: Confirmed
+          - generic [ref=e363]:
+            - img [ref=e364]
+            - generic [ref=e366]: Karachi Express
+            - generic [ref=e367]: "#10001"
+          - generic [ref=e368]:
+            - generic [ref=e369]:
+              - paragraph [ref=e370]: From
+              - paragraph [ref=e371]: Karachi
+              - paragraph [ref=e372]: 08:00
+            - generic [ref=e373]:
+              - paragraph [ref=e374]: Date
+              - paragraph [ref=e375]: Tue Jun 23 2026
+              - paragraph [ref=e377]: Economy
+            - generic [ref=e378]:
+              - paragraph [ref=e379]: To
+              - paragraph [ref=e380]: Lahore
+              - paragraph [ref=e381]: 20:30
+          - generic [ref=e382]:
+            - paragraph [ref=e383]: Passengers
+            - generic [ref=e385]:
+              - generic [ref=e386]: Ali Raza
+              - generic [ref=e387]: 28y, Male
+              - generic [ref=e388]: E1-1
+          - generic [ref=e389]:
+            - generic [ref=e390]: Total Paid
+            - generic [ref=e391]: ₹1200
+        - generic [ref=e392]:
+          - link "View / Download Ticket" [ref=e393] [cursor=pointer]:
+            - /url: /ticket/6a33d65923f22bd8db50de7f
+            - img [ref=e394]
+            - text: View / Download Ticket
+          - link "My Bookings" [ref=e396] [cursor=pointer]:
+            - /url: /dashboard
+    - contentinfo [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - img [ref=e37]
+          - generic [ref=e39]: Smart Railway Reservation System
+        - paragraph [ref=e40]: © 2026 SmartRail. All rights reserved.
+  - status [ref=e402]: Booking confirmed!
