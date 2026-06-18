@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../../services/api'
 import toast from 'react-hot-toast'
-import { FaTrain, FaPlus, FaEdit, FaTrash } from 'react-icons/fa'
+import { FaTrain, FaPlus, FaEdit, FaTrash, FaSearch } from 'react-icons/fa'
 
 const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
 const EMPTY = { trainNumber:'', trainName:'', source:'', destination:'', departureTime:'', arrivalTime:'', duration:'', totalDistance:'', runningDays:[], status:'Active' }
@@ -14,13 +14,27 @@ export default function ManageTrains() {
   const [editing, setEditing] = useState(null)
   const [form,    setForm]    = useState(EMPTY)
   const [saving,  setSaving]  = useState(false)
+  const [search,  setSearch]  = useState('')
 
-  const load = () => {
-    setLoading(true)
-    api.get('/trains/all').then(r => setTrains(r.data.trains || [])).catch(() => {}).finally(() => setLoading(false))
-  }
+   const load = () => {
+     setLoading(true)
+     if (search.trim()) {
+       api.get(`/trains/search?source=${search}`).then(r => setTrains(r.data.trains || [])).catch(() => {
+         // If search by source doesn't work, try by train name/number via getting all and filtering
+         api.get('/trains/all').then(r => {
+           const filtered = r.data.trains?.filter(t => 
+             t.trainNumber.toLowerCase().includes(search.toLowerCase()) || 
+             t.trainName.toLowerCase().includes(search.toLowerCase())
+           ) || [];
+           setTrains(filtered);
+         }).catch(() => setTrains([]));
+       }).finally(() => setLoading(false))
+     } else {
+       api.get('/trains/all').then(r => setTrains(r.data.trains || [])).catch(() => {}).finally(() => setLoading(false))
+     }
+   }
 
-  useEffect(load, [])
+   useEffect(load, [search])
 
   const openAdd  = () => { setEditing(null); setForm(EMPTY); setModal(true) }
   const openEdit = (t) => { setEditing(t._id); setForm({ ...t }); setModal(true) }
@@ -48,16 +62,26 @@ export default function ManageTrains() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Manage Trains</h1>
-          <Link to="/admin" className="text-sm text-blue-600 hover:underline">← Dashboard</Link>
-        </div>
-        <div className="flex gap-3">
-          <Link to="/admin/coaches" className="btn-secondary">Manage Coaches</Link>
-          <button onClick={openAdd} className="btn-primary flex items-center gap-2"><FaPlus/> Add Train</button>
-        </div>
-      </div>
+       <div className="flex justify-between items-center mb-6">
+         <div>
+           <h1 className="text-2xl font-bold text-gray-800">Manage Trains</h1>
+           <Link to="/admin" className="text-sm text-blue-600 hover:underline">← Dashboard</Link>
+         </div>
+         <div className="flex gap-3">
+           <div className="relative flex w-48">
+             <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
+             <input
+               type="text"
+               placeholder="Search by train number or name..."
+               className="input-field pl-10 pr-4"
+               value={search}
+               onChange={e => setSearch(e.target.value)}
+             />
+           </div>
+           <Link to="/admin/coaches" className="btn-secondary">Manage Coaches</Link>
+           <button onClick={openAdd} className="btn-primary flex items-center gap-2"><FaPlus/> Add Train</button>
+         </div>
+       </div>
 
       {loading ? (
         <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"/></div>
