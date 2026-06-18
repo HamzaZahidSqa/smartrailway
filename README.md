@@ -24,6 +24,12 @@ npm install
 npm run dev       # Start on port 5173
 ```
 
+### Environment Variables for Frontend Deployment
+When deploying frontend to Vercel or similar platforms, set:
+- `VITE_API_BASE_URL`: URL of your deployed backend (e.g., `https://your-backend.onrender.com`)
+
+During development, if not set, it defaults to `/api` (works with Vite proxy).
+
 ### Demo Credentials
 | Role      | Email                  | Password   |
 |-----------|------------------------|------------|
