@@ -44,3 +44,4 @@ dump/
 temp/
 tmp/
 .vercel
+.playwright-mcp/
