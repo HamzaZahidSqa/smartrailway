@@ -1,7 +1,6 @@
 {
   "version": 2,
-  "comment": "Frontend-only Vercel config. Set VITE_API_BASE_URL env var in Vercel dashboard to your Render backend URL (e.g. https://smart-railway.onrender.com/api)",
-  "builds": [
+"builds": [
     {
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
