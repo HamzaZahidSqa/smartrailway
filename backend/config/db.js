@@ -6,8 +6,8 @@ const connectDB = async () => {
     if (error) throw error;
     console.log('Supabase connected successfully');
   } catch (err) {
-    console.error(`Supabase connection error: ${err.message}`);
-    process.exit(1);
+    // Log warning only — do not exit in serverless environments
+    console.warn(`Supabase connection warning: ${err.message}`);
   }
 };
 
