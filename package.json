@@ -16,6 +16,7 @@
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.7",
+    "twilio": "^6.0.2",
     "uuid": "^9.0.0"
   }
 }
