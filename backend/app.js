@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const cors    = require('cors')
+const path    = require('path')
 const connectDB = require('./config/db')
 
 const app = express()
@@ -18,6 +19,12 @@ app.use('/api/seats',    require('./routes/seats'))
 app.use('/api/bookings', require('./routes/bookings'))
 app.use('/api/tickets',  require('./routes/tickets'))
 app.use('/api/admin',    require('./routes/admin'))
+
+const frontendDist = path.join(__dirname, '../frontend/dist')
+app.use(express.static(frontendDist))
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendDist, 'index.html'))
+})
 
 app.use((err, req, res, next) => {
   console.error(err.stack)
