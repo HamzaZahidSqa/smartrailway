@@ -1,56 +1,173 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import SeatMap from '../components/SeatMap'
 import toast from 'react-hot-toast'
-import { FaTrain, FaChair, FaUser, FaCheckCircle, FaMobileAlt, FaUniversity } from 'react-icons/fa'
+import { FaTrain, FaChair, FaUser, FaCheckCircle, FaSpinner, FaLock, FaMobileAlt } from 'react-icons/fa'
 
-const STEPS = ['Select Class', 'Select Seats', 'Passenger Details', 'Payment', 'Confirm & Book']
+const STEPS = ['Select Class', 'Select Seats', 'Passenger Details', 'Payment', 'Confirm & Pay']
 
 const PAYMENT_METHODS = [
   {
     id: 'JazzCash',
     label: 'JazzCash',
     icon: '📱',
-    theme: { bg: 'bg-red-50', border: 'border-red-200', title: 'text-red-700', sub: 'text-red-600', active: 'border-red-500 bg-red-50' },
+    type: 'mobile',
     backendMethod: 'JazzCash',
+    theme: { bg: 'bg-red-50', border: 'border-red-200', activeBorder: 'border-red-500', title: 'text-red-700', badge: 'bg-red-600' },
+    toNumber: '0300-1234567',
+    toName: 'Pakistan Railways',
+    ussd: '*786#',
   },
   {
     id: 'EasyPaisa',
     label: 'EasyPaisa',
     icon: '💚',
-    theme: { bg: 'bg-green-50', border: 'border-green-200', title: 'text-green-700', sub: 'text-green-600', active: 'border-green-500 bg-green-50' },
+    type: 'mobile',
     backendMethod: 'EasyPaisa',
+    theme: { bg: 'bg-green-50', border: 'border-green-200', activeBorder: 'border-green-500', title: 'text-green-700', badge: 'bg-green-600' },
+    toNumber: '0345-7654321',
+    toName: 'Pakistan Railways',
+    ussd: '*786# (Telenor)',
   },
   {
     id: 'Meezan',
     label: 'Meezan Bank',
     icon: '🕌',
-    theme: { bg: 'bg-emerald-50', border: 'border-emerald-200', title: 'text-emerald-700', sub: 'text-emerald-600', active: 'border-emerald-500 bg-emerald-50' },
+    type: 'bank',
     backendMethod: 'BankTransfer',
     bankName: 'Meezan Bank',
+    theme: { bg: 'bg-emerald-50', border: 'border-emerald-200', activeBorder: 'border-emerald-500', title: 'text-emerald-700', badge: 'bg-emerald-700' },
     account: { title: 'Pakistan Railways', number: '02890106782443', iban: 'PK40 MEZN 0002 8901 0678 2443', branch: 'Main Branch, Lahore' },
   },
   {
     id: 'BankOfPunjab',
     label: 'Bank of Punjab',
     icon: '🏛️',
-    theme: { bg: 'bg-blue-50', border: 'border-blue-200', title: 'text-blue-700', sub: 'text-blue-600', active: 'border-blue-500 bg-blue-50' },
+    type: 'bank',
     backendMethod: 'BankTransfer',
     bankName: 'Bank of Punjab',
+    theme: { bg: 'bg-blue-50', border: 'border-blue-200', activeBorder: 'border-blue-500', title: 'text-blue-700', badge: 'bg-blue-700' },
     account: { title: 'Pakistan Railways', number: '6010234567890', iban: 'PK36 BPUN 6010 2345 6789 0000', branch: 'Main Branch, Lahore' },
   },
   {
     id: 'UBL',
     label: 'United Bank Ltd',
     icon: '🏦',
-    theme: { bg: 'bg-purple-50', border: 'border-purple-200', title: 'text-purple-700', sub: 'text-purple-600', active: 'border-purple-500 bg-purple-50' },
+    type: 'bank',
     backendMethod: 'BankTransfer',
     bankName: 'UBL (United Bank)',
+    theme: { bg: 'bg-purple-50', border: 'border-purple-200', activeBorder: 'border-purple-500', title: 'text-purple-700', badge: 'bg-purple-700' },
     account: { title: 'Pakistan Railways', number: '1234567890123', iban: 'PK24 UNIL 0109 0001 2345 6789', branch: 'Main Branch, Karachi' },
   },
 ]
 
+const sleep = ms => new Promise(r => setTimeout(r, ms))
+
+/* ─── Payment Processing Overlay ─── */
+function PaymentOverlay({ method, amount, stage, done, failed }) {
+  const stages = [
+    { label: `Connecting to ${method?.label}...`, icon: '🔗' },
+    { label: 'Verifying payment details...', icon: '🔍' },
+    { label: `Processing Rs. ${amount}...`, icon: '⚙️' },
+    { label: 'Payment Successful!', icon: '✅' },
+  ]
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center">
+        <div className="text-5xl mb-4">{done ? '✅' : failed ? '❌' : method?.icon}</div>
+        <h2 className="text-xl font-bold text-gray-800 mb-1">{failed ? 'Payment Failed' : done ? 'Payment Verified!' : 'Processing Payment'}</h2>
+        <p className="text-sm text-gray-500 mb-6">{method?.label} • Rs. {amount}</p>
+
+        {!failed && (
+          <div className="space-y-3 text-left mb-6">
+            {stages.map((s, i) => (
+              <div key={i} className={`flex items-center gap-3 transition-all duration-300 ${i > stage ? 'opacity-30' : 'opacity-100'}`}>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs flex-shrink-0 ${
+                  i < stage ? 'bg-green-100 text-green-600' :
+                  i === stage ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'
+                }`}>
+                  {i < stage ? '✓' : i === stage && !done ? <FaSpinner className="animate-spin text-xs" /> : s.icon}
+                </div>
+                <span className={`text-sm ${i === stage ? 'font-semibold text-gray-800' : 'text-gray-500'}`}>{s.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {done && <div className="text-green-600 font-semibold text-sm animate-pulse">Creating your booking...</div>}
+        {failed && <p className="text-red-500 text-sm">Please check your details and try again.</p>}
+        <div className={`h-1 rounded-full mt-4 transition-all duration-1000 ${failed ? 'bg-red-200' : 'bg-blue-100'}`}>
+          <div className={`h-1 rounded-full transition-all duration-700 ${failed ? 'bg-red-500 w-full' : done ? 'bg-green-500 w-full' : 'bg-blue-500'}`}
+            style={{ width: done ? '100%' : `${(stage / 3) * 100}%` }} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ─── OTP Modal for mobile wallets ─── */
+function OtpModal({ method, phone, onVerify, onCancel }) {
+  const [otp, setOtp] = useState(['', '', '', '', '', ''])
+  const [sending, setSending] = useState(true)
+  const [sent, setSent] = useState(false)
+  const [verifying, setVerifying] = useState(false)
+  const refs = useRef([])
+
+  useEffect(() => {
+    setTimeout(() => { setSending(false); setSent(true) }, 1500)
+  }, [])
+
+  const handleOtp = (val, i) => {
+    if (!/^\d*$/.test(val)) return
+    const next = [...otp]; next[i] = val.slice(-1); setOtp(next)
+    if (val && i < 5) refs.current[i + 1]?.focus()
+  }
+  const handleKey = (e, i) => { if (e.key === 'Backspace' && !otp[i] && i > 0) refs.current[i - 1]?.focus() }
+
+  const verify = async () => {
+    if (otp.join('').length !== 6) return toast.error('Enter 6-digit OTP')
+    setVerifying(true)
+    await sleep(1200)
+    onVerify()
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4">
+        <div className="text-center mb-6">
+          <div className="text-4xl mb-3">{method?.icon}</div>
+          <h2 className="text-lg font-bold text-gray-800">{method?.label} Verification</h2>
+          {sending
+            ? <p className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-2"><FaSpinner className="animate-spin" /> Sending OTP to {phone}...</p>
+            : <p className="text-sm text-gray-500 mt-1">OTP sent to <strong>{phone}</strong></p>
+          }
+        </div>
+
+        {sent && (
+          <>
+            <p className="text-xs text-center text-gray-400 mb-4">Enter the 6-digit code received on your {method?.label} number</p>
+            <div className="flex gap-2 justify-center mb-6">
+              {otp.map((d, i) => (
+                <input key={i} ref={el => refs.current[i] = el} type="text" inputMode="numeric"
+                  value={d} onChange={e => handleOtp(e.target.value, i)} onKeyDown={e => handleKey(e, i)}
+                  className="w-10 h-12 text-center text-xl font-bold border-2 rounded-lg focus:outline-none focus:border-blue-500 border-gray-300" maxLength={1} />
+              ))}
+            </div>
+            <p className="text-xs text-center text-gray-400 mb-4">Demo: enter any 6 digits</p>
+            <button onClick={verify} disabled={verifying || otp.join('').length !== 6}
+              className="btn-primary w-full flex items-center justify-center gap-2 py-3">
+              {verifying ? <><FaSpinner className="animate-spin" /> Verifying...</> : 'Verify & Pay'}
+            </button>
+            <button onClick={onCancel} className="w-full text-center text-sm text-gray-400 mt-3 hover:text-gray-600">Cancel</button>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/* ─── Main Component ─── */
 export default function BookingFlow() {
   const { trainId } = useParams()
   const { state }   = useLocation()
@@ -60,45 +177,48 @@ export default function BookingFlow() {
   const passengers = Number(searchParams?.passengers) || 1
   const date = searchParams?.date || new Date().toISOString().split('T')[0]
 
-  const [step, setStep]             = useState(0)
-  const [coach, setCoach]           = useState(null)
-  const [seats, setSeats]           = useState([])
+  const [step, setStep]         = useState(0)
+  const [coach, setCoach]       = useState(null)
+  const [seats, setSeats]       = useState([])
   const [paxDetails, setPaxDetails] = useState(
     Array.from({ length: passengers }, () => ({ name: '', age: '', gender: 'Male', idType: 'CNIC', idNumber: '' }))
   )
-  const [paymentMethod, setPaymentMethod] = useState('JazzCash')
-  const [paymentDetails, setPaymentDetails] = useState({ phone: '', accountTitle: '', accountNumber: '', bankName: '', iban: '' })
-  const [loading, setLoading] = useState(false)
+  const [paymentId, setPaymentId]   = useState('JazzCash')
+  const [paymentDetails, setPaymentDetails] = useState({ phone: '', accountTitle: '', accountNumber: '', iban: '' })
+
+  const [showOtp,      setShowOtp]      = useState(false)
+  const [processing,   setProcessing]   = useState(false)
+  const [procStage,    setProcStage]    = useState(0)
+  const [procDone,     setProcDone]     = useState(false)
+  const [procFailed,   setProcFailed]   = useState(false)
 
   if (!train) return <div className="text-center py-20 text-red-500">Invalid booking. <a href="/" className="text-blue-600 underline">Go home</a></div>
 
-  const coachBadge = { Economy: 'bg-green-100 text-green-700', Sleeper: 'bg-blue-100 text-blue-700', Business: 'bg-purple-100 text-purple-700', Executive: 'bg-yellow-100 text-yellow-700' }
+  const selectedM  = PAYMENT_METHODS.find(m => m.id === paymentId)
   const totalFare  = coach ? coach.farePerSeat * passengers : 0
-  const selectedM  = PAYMENT_METHODS.find(m => m.id === paymentMethod)
+  const coachBadge = { Economy: 'bg-green-100 text-green-700', Sleeper: 'bg-blue-100 text-blue-700', Business: 'bg-purple-100 text-purple-700', Executive: 'bg-yellow-100 text-yellow-700' }
 
   const next = () => setStep(s => s + 1)
   const prev = () => setStep(s => s - 1)
-
-  const updatePax     = (i, k, v) => setPaxDetails(prev => prev.map((p, idx) => idx === i ? { ...p, [k]: v } : p))
-  const updatePayment = (k, v)    => setPaymentDetails(prev => ({ ...prev, [k]: v }))
-
-  const selectMethod = (id) => {
-    setPaymentMethod(id)
-    setPaymentDetails({ phone: '', accountTitle: '', accountNumber: '', bankName: '', iban: '' })
-  }
-
-  const isMobileMethod = () => selectedM?.id === 'JazzCash' || selectedM?.id === 'EasyPaisa'
-  const isBankMethod   = () => ['Meezan', 'BankOfPunjab', 'UBL'].includes(selectedM?.id)
+  const updatePax     = (i, k, v) => setPaxDetails(p => p.map((x, idx) => idx === i ? { ...x, [k]: v } : x))
+  const updatePayment = (k, v)    => setPaymentDetails(p => ({ ...p, [k]: v }))
+  const selectMethod  = (id) => { setPaymentId(id); setPaymentDetails({ phone: '', accountTitle: '', accountNumber: '', iban: '' }) }
 
   const isPaymentValid = () => {
-    if (isMobileMethod()) return paymentDetails.phone.trim().length >= 10
-    if (isBankMethod())   return paymentDetails.accountTitle.trim() && paymentDetails.accountNumber.trim()
+    if (selectedM?.type === 'mobile') return paymentDetails.phone.replace(/\D/g, '').length >= 10
+    if (selectedM?.type === 'bank')   return paymentDetails.accountTitle.trim() && paymentDetails.accountNumber.trim()
     return false
   }
 
-  const confirm = async () => {
-    setLoading(true)
+  /* ─ Process payment then create booking ─ */
+  const runPaymentAndBook = async () => {
+    setProcessing(true); setProcStage(0); setProcDone(false); setProcFailed(false)
     try {
+      await sleep(900);  setProcStage(1)
+      await sleep(1100); setProcStage(2)
+      await sleep(1300); setProcStage(3); setProcDone(true)
+      await sleep(700)
+
       const paxWithSeats = paxDetails.map((p, i) => ({ ...p, seatNumber: seats[i]?.seatNumber || '' }))
       const { data } = await api.post('/bookings', {
         trainId, coachId: coach._id, travelDate: date,
@@ -106,17 +226,43 @@ export default function BookingFlow() {
         passengers: paxWithSeats, seats: seats.map(s => s.seatNumber),
         totalFare,
         paymentMethod: selectedM?.backendMethod,
-        paymentDetails: { ...paymentDetails, bankName: selectedM?.bankName || paymentDetails.bankName },
+        paymentDetails: { ...paymentDetails, bankName: selectedM?.bankName || '' },
       })
       toast.success('Booking confirmed!')
       navigate(`/booking/${data.booking._id}`)
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Booking failed')
-    } finally { setLoading(false) }
+      setProcDone(false); setProcFailed(true)
+      await sleep(2000)
+      setProcessing(false); setProcFailed(false)
+      toast.error(err.response?.data?.message || 'Payment failed. Try again.')
+    }
+  }
+
+  /* ─ Confirm button clicked ─ */
+  const handleConfirm = () => {
+    if (selectedM?.type === 'mobile') {
+      setShowOtp(true)     // show OTP modal first
+    } else {
+      runPaymentAndBook()  // bank: go straight to processing
+    }
   }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
+
+      {/* Payment processing overlay */}
+      {processing && <PaymentOverlay method={selectedM} amount={totalFare} stage={procStage} done={procDone} failed={procFailed} />}
+
+      {/* OTP modal */}
+      {showOtp && (
+        <OtpModal
+          method={selectedM}
+          phone={paymentDetails.phone}
+          onVerify={() => { setShowOtp(false); runPaymentAndBook() }}
+          onCancel={() => setShowOtp(false)}
+        />
+      )}
+
       {/* Stepper */}
       <div className="flex items-center justify-between mb-8">
         {STEPS.map((s, i) => (
@@ -128,23 +274,25 @@ export default function BookingFlow() {
         ))}
       </div>
 
-      {/* Train summary */}
+      {/* Train summary bar */}
       <div className="card mb-6 bg-blue-50">
-        <div className="flex items-center gap-2 text-blue-800 font-semibold">
-          <FaTrain /> {train.trainName} ({train.trainNumber}) &nbsp;|&nbsp;
-          {searchParams?.from} → {searchParams?.to} &nbsp;|&nbsp;
-          {new Date(date).toDateString()} &nbsp;|&nbsp; {passengers} Pax
+        <div className="flex items-center gap-2 text-blue-800 font-semibold text-sm flex-wrap">
+          <FaTrain /> {train.trainName} ({train.trainNumber})
+          <span className="text-gray-400">|</span> {searchParams?.from} → {searchParams?.to}
+          <span className="text-gray-400">|</span> {new Date(date).toDateString()}
+          <span className="text-gray-400">|</span> {passengers} Pax
+          {coach && <><span className="text-gray-400">|</span> <span className="font-bold text-blue-700">Rs. {totalFare}</span></>}
         </div>
       </div>
 
-      {/* Step 0: Select Class */}
+      {/* ═══ Step 0: Select Class ═══ */}
       {step === 0 && (
         <div className="card">
           <h2 className="text-xl font-bold mb-4">Select Coach Class</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {train.coaches?.filter(c => c.availableSeats >= passengers).map(c => (
               <button key={c._id} onClick={() => { setCoach(c); next() }}
-                className={`border-2 rounded-xl p-4 text-left transition hover:border-blue-500 hover:bg-blue-50 ${coach?._id === c._id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}>
+                className="border-2 border-gray-200 rounded-xl p-4 text-left hover:border-blue-500 hover:bg-blue-50 transition">
                 <div className="flex justify-between items-start mb-2">
                   <span className={`text-sm px-2 py-0.5 rounded font-semibold ${coachBadge[c.coachType]}`}>{c.coachType}</span>
                   <span className="font-bold text-blue-700 text-lg">Rs. {c.farePerSeat}/seat</span>
@@ -161,7 +309,7 @@ export default function BookingFlow() {
         </div>
       )}
 
-      {/* Step 1: Select Seats */}
+      {/* ═══ Step 1: Seats ═══ */}
       {step === 1 && coach && (
         <div className="card">
           <h2 className="text-xl font-bold mb-4">Select {passengers} Seat(s) — {coach.coachType} ({coach.coachNumber})</h2>
@@ -175,19 +323,20 @@ export default function BookingFlow() {
         </div>
       )}
 
-      {/* Step 2: Passenger Details */}
+      {/* ═══ Step 2: Passenger Details ═══ */}
       {step === 2 && (
         <div className="card">
           <h2 className="text-xl font-bold mb-4">Passenger Details</h2>
           {paxDetails.map((p, i) => (
             <div key={i} className="mb-6 p-4 border border-gray-200 rounded-xl">
               <h3 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <FaUser className="text-blue-500" /> Passenger {i + 1} — Seat: <span className="text-blue-600">{seats[i]?.seatNumber}</span>
+                <FaUser className="text-blue-500" /> Passenger {i + 1}
+                <span className="text-blue-600 font-mono text-sm">— {seats[i]?.seatNumber}</span>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">Full Name *</label>
-                  <input className="input-field" value={p.name} onChange={e => updatePax(i, 'name', e.target.value)} placeholder="Full name as per CNIC" />
+                  <input className="input-field" value={p.name} onChange={e => updatePax(i, 'name', e.target.value)} placeholder="As per CNIC" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">Age *</label>
@@ -207,199 +356,126 @@ export default function BookingFlow() {
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-600 mb-1">ID Number</label>
-                  <input className="input-field" value={p.idNumber} onChange={e => updatePax(i, 'idNumber', e.target.value)} placeholder={p.idType === 'CNIC' ? '12345-1234567-1' : 'ID number'} />
+                  <input className="input-field" value={p.idNumber} onChange={e => updatePax(i, 'idNumber', e.target.value)}
+                    placeholder={p.idType === 'CNIC' ? '12345-1234567-1' : 'ID number'} />
                 </div>
               </div>
             </div>
           ))}
           <div className="flex gap-3">
             <button onClick={prev} className="btn-secondary flex-1">Back</button>
-            <button onClick={next} disabled={paxDetails.some(p => !p.name || !p.age)} className="btn-primary flex-1">Continue to Payment</button>
+            <button onClick={next} disabled={paxDetails.some(p => !p.name || !p.age)} className="btn-primary flex-1">
+              Continue to Payment
+            </button>
           </div>
         </div>
       )}
 
-      {/* Step 3: Payment */}
+      {/* ═══ Step 3: Payment ═══ */}
       {step === 3 && (
         <div className="card">
           <h2 className="text-xl font-bold mb-1">Choose Payment Method</h2>
-          <p className="text-gray-500 text-sm mb-5">Amount to pay: <span className="font-bold text-blue-700 text-lg">Rs. {totalFare}</span></p>
+          <p className="text-gray-500 text-sm mb-5 flex items-center gap-1">
+            <FaLock className="text-green-500" /> Secure Payment — Amount: <strong className="text-blue-700 text-base ml-1">Rs. {totalFare}</strong>
+          </p>
 
-          {/* Method cards — 5 options */}
+          {/* Method cards */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
             {PAYMENT_METHODS.map(m => (
               <button key={m.id} onClick={() => selectMethod(m.id)}
-                className={`border-2 rounded-xl p-3 text-center transition ${paymentMethod === m.id ? m.theme.active : 'border-gray-200 hover:border-gray-300'}`}>
+                className={`border-2 rounded-xl p-3 text-center transition-all ${paymentId === m.id
+                  ? `${m.theme.activeBorder} ${m.theme.bg} shadow-md scale-105`
+                  : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'}`}>
                 <div className="text-2xl mb-1">{m.icon}</div>
-                <div className="font-semibold text-xs leading-tight">{m.label}</div>
+                <div className={`font-semibold text-xs leading-tight ${paymentId === m.id ? m.theme.title : 'text-gray-700'}`}>{m.label}</div>
+                {paymentId === m.id && <div className={`mt-1.5 w-2 h-2 rounded-full ${m.theme.badge} mx-auto`} />}
               </button>
             ))}
           </div>
 
-          {/* ─── JazzCash ─── */}
-          {paymentMethod === 'JazzCash' && (
+          {/* ── Mobile wallets (JazzCash / EasyPaisa) ── */}
+          {selectedM?.type === 'mobile' && (
             <div className={`${selectedM.theme.bg} border ${selectedM.theme.border} rounded-xl p-5`}>
               <div className="flex items-center gap-3 mb-4">
-                <span className="text-3xl">📱</span>
+                <span className="text-4xl">{selectedM.icon}</span>
                 <div>
-                  <h3 className={`font-bold text-lg ${selectedM.theme.title}`}>JazzCash</h3>
-                  <p className={`text-xs ${selectedM.theme.sub}`}>Pay via JazzCash mobile wallet</p>
+                  <h3 className={`font-bold text-lg ${selectedM.theme.title}`}>{selectedM.label}</h3>
+                  <p className="text-xs text-gray-500">Mobile Wallet Payment</p>
                 </div>
               </div>
-              <div className="bg-white rounded-lg p-4 mb-4 text-sm border border-red-100">
-                <p className="font-semibold text-gray-700 mb-2">Send payment to:</p>
-                <div className="space-y-1 text-sm">
-                  <p><span className="text-gray-500">Number:</span> <strong className="text-red-700">0300-1234567</strong></p>
-                  <p><span className="text-gray-500">Account Title:</span> <strong>Pakistan Railways</strong></p>
-                  <p><span className="text-gray-500">Amount:</span> <strong className="text-red-700">Rs. {totalFare}</strong></p>
+
+              <div className="bg-white rounded-xl p-4 mb-4 border border-gray-100">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Transfer Details</p>
+                <div className="grid grid-cols-2 gap-y-2 text-sm">
+                  <span className="text-gray-500">Send To:</span>
+                  <strong className={selectedM.theme.title}>{selectedM.toNumber}</strong>
+                  <span className="text-gray-500">Account Title:</span>
+                  <span className="font-medium">{selectedM.toName}</span>
+                  <span className="text-gray-500">Amount:</span>
+                  <strong className={selectedM.theme.title}>Rs. {totalFare}</strong>
                 </div>
-                <ol className="list-decimal list-inside text-xs text-gray-500 mt-3 space-y-1">
-                  <li>Open JazzCash app or dial <strong>*786#</strong></li>
-                  <li>Send Money → enter <strong>0300-1234567</strong></li>
-                  <li>Amount: <strong>Rs. {totalFare}</strong> → confirm PIN</li>
-                  <li>Enter your JazzCash number below</li>
-                </ol>
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <p className="text-xs text-gray-500 font-medium mb-1">Steps:</p>
+                  <ol className="text-xs text-gray-500 space-y-0.5 list-decimal list-inside">
+                    <li>Dial <strong>{selectedM.ussd}</strong> or open {selectedM.label} app</li>
+                    <li>Send Money → <strong>{selectedM.toNumber}</strong></li>
+                    <li>Amount: <strong>Rs. {totalFare}</strong> → confirm PIN</li>
+                    <li>Enter your number below — OTP will be sent</li>
+                  </ol>
+                </div>
               </div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Your JazzCash Number *</label>
-              <input className="input-field" value={paymentDetails.phone} onChange={e => updatePayment('phone', e.target.value)} placeholder="03XX-XXXXXXX" maxLength={13} />
+
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                <FaMobileAlt className="inline mr-1" /> Your {selectedM.label} Number *
+              </label>
+              <input className="input-field text-lg tracking-wider" value={paymentDetails.phone}
+                onChange={e => updatePayment('phone', e.target.value)}
+                placeholder="03XX-XXXXXXX" maxLength={13} />
+              <p className="text-xs text-gray-400 mt-1">An OTP will be sent to verify your payment.</p>
             </div>
           )}
 
-          {/* ─── EasyPaisa ─── */}
-          {paymentMethod === 'EasyPaisa' && (
+          {/* ── Bank Transfer ── */}
+          {selectedM?.type === 'bank' && (
             <div className={`${selectedM.theme.bg} border ${selectedM.theme.border} rounded-xl p-5`}>
               <div className="flex items-center gap-3 mb-4">
-                <span className="text-3xl">💚</span>
+                <span className="text-4xl">{selectedM.icon}</span>
                 <div>
-                  <h3 className={`font-bold text-lg ${selectedM.theme.title}`}>EasyPaisa</h3>
-                  <p className={`text-xs ${selectedM.theme.sub}`}>Pay via EasyPaisa mobile wallet</p>
+                  <h3 className={`font-bold text-lg ${selectedM.theme.title}`}>{selectedM.label}</h3>
+                  <p className="text-xs text-gray-500">Online Transfer / IBFT / RAAST</p>
                 </div>
               </div>
-              <div className="bg-white rounded-lg p-4 mb-4 text-sm border border-green-100">
-                <p className="font-semibold text-gray-700 mb-2">Send payment to:</p>
-                <div className="space-y-1 text-sm">
-                  <p><span className="text-gray-500">Number:</span> <strong className="text-green-700">0345-7654321</strong></p>
-                  <p><span className="text-gray-500">Account Title:</span> <strong>Pakistan Railways</strong></p>
-                  <p><span className="text-gray-500">Amount:</span> <strong className="text-green-700">Rs. {totalFare}</strong></p>
-                </div>
-                <ol className="list-decimal list-inside text-xs text-gray-500 mt-3 space-y-1">
-                  <li>Open EasyPaisa app or dial <strong>*786#</strong> (Telenor)</li>
-                  <li>Send Money → enter <strong>0345-7654321</strong></li>
-                  <li>Amount: <strong>Rs. {totalFare}</strong> → confirm PIN</li>
-                  <li>Enter your EasyPaisa number below</li>
-                </ol>
-              </div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Your EasyPaisa Number *</label>
-              <input className="input-field" value={paymentDetails.phone} onChange={e => updatePayment('phone', e.target.value)} placeholder="03XX-XXXXXXX" maxLength={13} />
-            </div>
-          )}
 
-          {/* ─── Meezan Bank ─── */}
-          {paymentMethod === 'Meezan' && (
-            <div className={`${selectedM.theme.bg} border ${selectedM.theme.border} rounded-xl p-5`}>
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-3xl">🕌</span>
-                <div>
-                  <h3 className={`font-bold text-lg ${selectedM.theme.title}`}>Meezan Bank</h3>
-                  <p className={`text-xs ${selectedM.theme.sub}`}>Islamic Banking — Online Transfer / RAAST</p>
+              <div className="bg-white rounded-xl p-4 mb-4 border border-gray-100">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Bank Account Details</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-sm">
+                  <div><p className="text-xs text-gray-400">Account Title</p><p className="font-semibold">{selectedM.account.title}</p></div>
+                  <div><p className="text-xs text-gray-400">Account Number</p><p className="font-mono font-semibold">{selectedM.account.number}</p></div>
+                  <div><p className="text-xs text-gray-400">IBAN</p><p className="font-mono text-xs">{selectedM.account.iban}</p></div>
+                  <div><p className="text-xs text-gray-400">Branch</p><p className="text-sm">{selectedM.account.branch}</p></div>
+                </div>
+                <div className={`mt-3 pt-3 border-t border-gray-100 flex justify-between items-center`}>
+                  <span className="text-sm text-gray-500">Transfer Amount:</span>
+                  <strong className={`text-xl ${selectedM.theme.title}`}>Rs. {totalFare}</strong>
                 </div>
               </div>
-              <div className="bg-white rounded-lg p-4 mb-4 border border-emerald-100">
-                <p className="font-semibold text-gray-700 mb-2 text-sm">Transfer to this account:</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                  <div><span className="text-gray-500 text-xs">Account Title</span><p className="font-semibold">{selectedM.account.title}</p></div>
-                  <div><span className="text-gray-500 text-xs">Account Number</span><p className="font-mono font-semibold">{selectedM.account.number}</p></div>
-                  <div><span className="text-gray-500 text-xs">IBAN</span><p className="font-mono text-xs">{selectedM.account.iban}</p></div>
-                  <div><span className="text-gray-500 text-xs">Branch</span><p className="text-sm">{selectedM.account.branch}</p></div>
-                  <div className="sm:col-span-2"><span className="text-gray-500 text-xs">Amount</span><p className={`font-bold text-lg ${selectedM.theme.title}`}>Rs. {totalFare}</p></div>
-                </div>
-              </div>
+
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Your Account Details</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Your Account Title *</label>
-                  <input className="input-field" value={paymentDetails.accountTitle} onChange={e => updatePayment('accountTitle', e.target.value)} placeholder="Account holder name" />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Account Title *</label>
+                  <input className="input-field" value={paymentDetails.accountTitle}
+                    onChange={e => updatePayment('accountTitle', e.target.value)} placeholder="Your account holder name" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Your Account Number *</label>
-                  <input className="input-field" value={paymentDetails.accountNumber} onChange={e => updatePayment('accountNumber', e.target.value)} placeholder="Meezan account number" />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Account Number *</label>
+                  <input className="input-field" value={paymentDetails.accountNumber}
+                    onChange={e => updatePayment('accountNumber', e.target.value)} placeholder="Your account number" />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Your IBAN (optional)</label>
-                  <input className="input-field" value={paymentDetails.iban} onChange={e => updatePayment('iban', e.target.value)} placeholder="PK00 MEZN 0000 0000 0000 0000" />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ─── Bank of Punjab ─── */}
-          {paymentMethod === 'BankOfPunjab' && (
-            <div className={`${selectedM.theme.bg} border ${selectedM.theme.border} rounded-xl p-5`}>
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-3xl">🏛️</span>
-                <div>
-                  <h3 className={`font-bold text-lg ${selectedM.theme.title}`}>Bank of Punjab</h3>
-                  <p className={`text-xs ${selectedM.theme.sub}`}>Online Transfer / IBFT / RAAST</p>
-                </div>
-              </div>
-              <div className="bg-white rounded-lg p-4 mb-4 border border-blue-100">
-                <p className="font-semibold text-gray-700 mb-2 text-sm">Transfer to this account:</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                  <div><span className="text-gray-500 text-xs">Account Title</span><p className="font-semibold">{selectedM.account.title}</p></div>
-                  <div><span className="text-gray-500 text-xs">Account Number</span><p className="font-mono font-semibold">{selectedM.account.number}</p></div>
-                  <div><span className="text-gray-500 text-xs">IBAN</span><p className="font-mono text-xs">{selectedM.account.iban}</p></div>
-                  <div><span className="text-gray-500 text-xs">Branch</span><p className="text-sm">{selectedM.account.branch}</p></div>
-                  <div className="sm:col-span-2"><span className="text-gray-500 text-xs">Amount</span><p className={`font-bold text-lg ${selectedM.theme.title}`}>Rs. {totalFare}</p></div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Your Account Title *</label>
-                  <input className="input-field" value={paymentDetails.accountTitle} onChange={e => updatePayment('accountTitle', e.target.value)} placeholder="Account holder name" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Your Account Number *</label>
-                  <input className="input-field" value={paymentDetails.accountNumber} onChange={e => updatePayment('accountNumber', e.target.value)} placeholder="BOP account number" />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Your IBAN (optional)</label>
-                  <input className="input-field" value={paymentDetails.iban} onChange={e => updatePayment('iban', e.target.value)} placeholder="PK00 BPUN 0000 0000 0000 0000" />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ─── UBL ─── */}
-          {paymentMethod === 'UBL' && (
-            <div className={`${selectedM.theme.bg} border ${selectedM.theme.border} rounded-xl p-5`}>
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-3xl">🏦</span>
-                <div>
-                  <h3 className={`font-bold text-lg ${selectedM.theme.title}`}>United Bank Limited</h3>
-                  <p className={`text-xs ${selectedM.theme.sub}`}>Online Transfer / IBFT / RAAST</p>
-                </div>
-              </div>
-              <div className="bg-white rounded-lg p-4 mb-4 border border-purple-100">
-                <p className="font-semibold text-gray-700 mb-2 text-sm">Transfer to this account:</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                  <div><span className="text-gray-500 text-xs">Account Title</span><p className="font-semibold">{selectedM.account.title}</p></div>
-                  <div><span className="text-gray-500 text-xs">Account Number</span><p className="font-mono font-semibold">{selectedM.account.number}</p></div>
-                  <div><span className="text-gray-500 text-xs">IBAN</span><p className="font-mono text-xs">{selectedM.account.iban}</p></div>
-                  <div><span className="text-gray-500 text-xs">Branch</span><p className="text-sm">{selectedM.account.branch}</p></div>
-                  <div className="sm:col-span-2"><span className="text-gray-500 text-xs">Amount</span><p className={`font-bold text-lg ${selectedM.theme.title}`}>Rs. {totalFare}</p></div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Your Account Title *</label>
-                  <input className="input-field" value={paymentDetails.accountTitle} onChange={e => updatePayment('accountTitle', e.target.value)} placeholder="Account holder name" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Your Account Number *</label>
-                  <input className="input-field" value={paymentDetails.accountNumber} onChange={e => updatePayment('accountNumber', e.target.value)} placeholder="UBL account number" />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Your IBAN (optional)</label>
-                  <input className="input-field" value={paymentDetails.iban} onChange={e => updatePayment('iban', e.target.value)} placeholder="PK00 UNIL 0000 0000 0000 0000" />
+                  <input className="input-field" value={paymentDetails.iban}
+                    onChange={e => updatePayment('iban', e.target.value)} placeholder="PK00 XXXX 0000 0000 0000 0000" />
                 </div>
               </div>
             </div>
@@ -408,65 +484,79 @@ export default function BookingFlow() {
           <div className="flex gap-3 mt-6">
             <button onClick={prev} className="btn-secondary flex-1">Back</button>
             <button onClick={next} disabled={!isPaymentValid()} className="btn-primary flex-1">
-              Continue to Review
+              Review & Confirm
             </button>
           </div>
         </div>
       )}
 
-      {/* Step 4: Confirm */}
+      {/* ═══ Step 4: Confirm ═══ */}
       {step === 4 && (
         <div className="card">
-          <h2 className="text-xl font-bold mb-4">Confirm Booking</h2>
+          <h2 className="text-xl font-bold mb-4">Review & Confirm Booking</h2>
           <div className="space-y-4">
+
             <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold mb-2 text-gray-700">Journey Details</h3>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <span className="text-gray-500">Train:</span><span className="font-medium">{train.trainName}</span>
-                <span className="text-gray-500">From → To:</span><span className="font-medium">{searchParams?.from} → {searchParams?.to}</span>
-                <span className="text-gray-500">Date:</span><span className="font-medium">{new Date(date).toDateString()}</span>
-                <span className="text-gray-500">Class:</span><span className="font-medium">{coach?.coachType} ({coach?.coachNumber})</span>
-                <span className="text-gray-500">Seats:</span><span className="font-medium">{seats.map(s => s.seatNumber).join(', ')}</span>
+              <h3 className="font-semibold mb-3 text-gray-700 text-sm uppercase tracking-wide">Journey</h3>
+              <div className="grid grid-cols-2 gap-y-2 text-sm">
+                <span className="text-gray-500">Train</span><span className="font-medium">{train.trainName} ({train.trainNumber})</span>
+                <span className="text-gray-500">Route</span><span className="font-medium">{searchParams?.from} → {searchParams?.to}</span>
+                <span className="text-gray-500">Date</span><span className="font-medium">{new Date(date).toDateString()}</span>
+                <span className="text-gray-500">Class</span><span className="font-medium">{coach?.coachType} ({coach?.coachNumber})</span>
+                <span className="text-gray-500">Seats</span><span className="font-medium font-mono">{seats.map(s => s.seatNumber).join(', ')}</span>
               </div>
             </div>
 
             <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold mb-2 text-gray-700">Passengers</h3>
+              <h3 className="font-semibold mb-3 text-gray-700 text-sm uppercase tracking-wide">Passengers</h3>
               {paxDetails.map((p, i) => (
-                <div key={i} className="text-sm flex gap-4 py-1 border-b border-gray-200 last:border-0">
+                <div key={i} className="flex justify-between text-sm py-1.5 border-b border-gray-200 last:border-0">
                   <span className="font-medium">{p.name}</span>
-                  <span className="text-gray-500">{p.age} yrs, {p.gender}</span>
-                  <span className="text-blue-600">{seats[i]?.seatNumber}</span>
+                  <span className="text-gray-500">{p.age}y, {p.gender}</span>
+                  <span className="text-blue-600 font-mono">{seats[i]?.seatNumber}</span>
                 </div>
               ))}
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold mb-2 text-gray-700">Payment Method</h3>
+            <div className={`${selectedM?.theme.bg} border ${selectedM?.theme.border} rounded-xl p-4`}>
+              <h3 className="font-semibold mb-3 text-gray-700 text-sm uppercase tracking-wide">Payment</h3>
               <div className="flex items-center gap-3">
-                <span className="text-2xl">{selectedM?.icon}</span>
+                <span className="text-3xl">{selectedM?.icon}</span>
                 <div>
-                  <p className="font-semibold">{selectedM?.label}</p>
-                  {isMobileMethod() && paymentDetails.phone && <p className="text-sm text-gray-500">{paymentDetails.phone}</p>}
-                  {isBankMethod() && paymentDetails.accountTitle && (
-                    <p className="text-sm text-gray-500">{paymentDetails.accountTitle} — {selectedM?.bankName}</p>
-                  )}
+                  <p className={`font-bold ${selectedM?.theme.title}`}>{selectedM?.label}</p>
+                  {selectedM?.type === 'mobile' && <p className="text-sm text-gray-600">{paymentDetails.phone}</p>}
+                  {selectedM?.type === 'bank' && <p className="text-sm text-gray-600">{paymentDetails.accountTitle} — {selectedM?.bankName}</p>}
+                </div>
+                <div className="ml-auto flex items-center gap-1 text-green-600 text-xs font-medium">
+                  <FaLock /> Secure
                 </div>
               </div>
             </div>
 
-            <div className="bg-blue-50 rounded-xl p-4 flex justify-between items-center">
-              <span className="font-semibold text-gray-700">Total Fare</span>
-              <span className="text-2xl font-bold text-blue-700">Rs. {totalFare}</span>
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-4 flex justify-between items-center text-white">
+              <div>
+                <p className="text-blue-200 text-sm">Total Amount</p>
+                <p className="text-3xl font-bold">Rs. {totalFare}</p>
+              </div>
+              <div className="text-right text-blue-200 text-sm">
+                <p>{passengers} × Rs. {coach?.farePerSeat}</p>
+                <p>{coach?.coachType} class</p>
+              </div>
             </div>
           </div>
 
           <div className="flex gap-3 mt-6">
             <button onClick={prev} className="btn-secondary flex-1">Back</button>
-            <button onClick={confirm} disabled={loading} className="btn-primary flex-1 py-3 flex items-center justify-center gap-2">
-              <FaCheckCircle /> {loading ? 'Confirming...' : `Confirm & Pay Rs. ${totalFare}`}
+            <button onClick={handleConfirm}
+              className={`flex-1 py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition shadow-lg text-base ${selectedM?.theme.badge || 'bg-blue-600'} hover:opacity-90 active:scale-95`}>
+              <FaCheckCircle />
+              {selectedM?.type === 'mobile' ? `Pay Rs. ${totalFare} via ${selectedM?.label}` : `Confirm & Pay Rs. ${totalFare}`}
             </button>
           </div>
+
+          <p className="text-center text-xs text-gray-400 mt-3 flex items-center justify-center gap-1">
+            <FaLock /> Your payment is secured and encrypted
+          </p>
         </div>
       )}
     </div>
