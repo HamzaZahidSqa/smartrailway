@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import SeatMap from '../components/SeatMap'
@@ -106,98 +106,6 @@ function PaymentOverlay({ method, amount, stage, done, failed }) {
   )
 }
 
-/* ─── OTP Modal for mobile wallets ─── */
-function OtpModal({ method, phone, onVerify, onCancel }) {
-  const [otp, setOtp]             = useState(['', '', '', '', '', ''])
-  const [sending, setSending]     = useState(true)
-  const [sent, setSent]           = useState(false)
-  const [verifying, setVerifying] = useState(false)
-  const [error, setError]         = useState('')
-  const [demoCode, setDemoCode]   = useState('')
-  const refs = useRef([])
-
-  useEffect(() => {
-    api.post('/auth/send-otp', { phone })
-      .then(r => { setSending(false); setSent(true); if (r.data.demoCode) setDemoCode(r.data.demoCode) })
-      .catch(err => { setSending(false); setError(err.response?.data?.message || 'Failed to send OTP. Check your number.') })
-  }, [phone])
-
-  const handleOtp = (val, i) => {
-    if (!/^\d*$/.test(val)) return
-    setError('')
-    const next = [...otp]; next[i] = val.slice(-1); setOtp(next)
-    if (val && i < 5) refs.current[i + 1]?.focus()
-  }
-  const handleKey = (e, i) => { if (e.key === 'Backspace' && !otp[i] && i > 0) refs.current[i - 1]?.focus() }
-
-  const resend = () => {
-    setSent(false); setSending(true); setError(''); setOtp(['', '', '', '', '', '']); setDemoCode('')
-    api.post('/auth/send-otp', { phone })
-      .then(r => { setSending(false); setSent(true); toast.success('OTP resent!'); if (r.data.demoCode) setDemoCode(r.data.demoCode) })
-      .catch(err => { setSending(false); setError(err.response?.data?.message || 'Failed to resend.') })
-  }
-
-  const verify = async () => {
-    const code = otp.join('')
-    if (code.length !== 6) return setError('Enter the complete 6-digit code')
-    setVerifying(true); setError('')
-    try {
-      await api.post('/auth/verify-otp', { phone, code })
-      onVerify()
-    } catch (err) {
-      setVerifying(false)
-      setError(err.response?.data?.message || 'Invalid OTP. Try again.')
-      setOtp(['', '', '', '', '', ''])
-      refs.current[0]?.focus()
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4">
-        <div className="text-center mb-6">
-          <div className="text-4xl mb-3">{method?.icon}</div>
-          <h2 className="text-lg font-bold text-gray-800">{method?.label} Verification</h2>
-          {sending
-            ? <p className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-2"><FaSpinner className="animate-spin" /> Sending OTP to {phone}...</p>
-            : <p className="text-sm text-gray-500 mt-1">OTP sent to <strong>{phone}</strong></p>
-          }
-        </div>
-
-        {error && <div className="bg-red-50 border border-red-200 text-red-600 rounded-lg px-3 py-2 text-sm text-center mb-4">{error}</div>}
-
-        {demoCode && (
-          <div className="bg-yellow-50 border border-yellow-300 rounded-lg px-3 py-2 text-sm text-center mb-4 text-yellow-800">
-            Demo OTP (Twilio not configured): <strong className="font-mono text-base tracking-widest">{demoCode}</strong>
-          </div>
-        )}
-
-        {sent && (
-          <>
-            <p className="text-xs text-center text-gray-400 mb-4">Enter the 6-digit code sent to your {method?.label} number</p>
-            <div className="flex gap-2 justify-center mb-6">
-              {otp.map((d, i) => (
-                <input key={i} ref={el => refs.current[i] = el} type="text" inputMode="numeric"
-                  value={d} onChange={e => handleOtp(e.target.value, i)} onKeyDown={e => handleKey(e, i)}
-                  className={`w-10 h-12 text-center text-xl font-bold border-2 rounded-lg focus:outline-none focus:border-blue-500 ${error ? 'border-red-400' : 'border-gray-300'}`}
-                  maxLength={1} />
-              ))}
-            </div>
-            <button onClick={verify} disabled={verifying || otp.join('').length !== 6}
-              className="btn-primary w-full flex items-center justify-center gap-2 py-3">
-              {verifying ? <><FaSpinner className="animate-spin" /> Verifying...</> : 'Verify & Pay'}
-            </button>
-            <div className="flex justify-between mt-3">
-              <button onClick={onCancel} className="text-sm text-gray-400 hover:text-gray-600">Cancel</button>
-              <button onClick={resend} className="text-sm text-blue-500 hover:text-blue-700">Resend OTP</button>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  )
-}
-
 /* ─── Main Component ─── */
 export default function BookingFlow() {
   const { trainId } = useParams()
@@ -229,7 +137,6 @@ export default function BookingFlow() {
   const [paymentId, setPaymentId]   = useState('JazzCash')
   const [paymentDetails, setPaymentDetails] = useState({ phone: '', accountTitle: '', accountNumber: '', iban: '' })
 
-  const [showOtp,      setShowOtp]      = useState(false)
   const [processing,   setProcessing]   = useState(false)
   const [procStage,    setProcStage]    = useState(0)
   const [procDone,     setProcDone]     = useState(false)
@@ -282,29 +189,13 @@ export default function BookingFlow() {
   }
 
   /* ─ Confirm button clicked ─ */
-  const handleConfirm = () => {
-    if (selectedM?.type === 'mobile') {
-      setShowOtp(true)     // show OTP modal first
-    } else {
-      runPaymentAndBook()  // bank: go straight to processing
-    }
-  }
+  const handleConfirm = () => runPaymentAndBook()
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
 
       {/* Payment processing overlay */}
       {processing && <PaymentOverlay method={selectedM} amount={totalFare} stage={procStage} done={procDone} failed={procFailed} />}
-
-      {/* OTP modal */}
-      {showOtp && (
-        <OtpModal
-          method={selectedM}
-          phone={paymentDetails.phone}
-          onVerify={() => { setShowOtp(false); runPaymentAndBook() }}
-          onCancel={() => setShowOtp(false)}
-        />
-      )}
 
       {/* Stepper */}
       <div className="flex items-center justify-between mb-8">

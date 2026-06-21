@@ -1,23 +1,35 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { FaTrain, FaBars, FaTimes } from 'react-icons/fa'
+import { FaTrain, FaBars, FaTimes, FaArrowLeft } from 'react-icons/fa'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 
 export default function Navbar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [open, setOpen] = useState(false)
 
   const handleLogout = () => { logout(); toast.success('Logged out'); navigate('/') }
+  const isHome = location.pathname === '/'
 
   return (
     <nav className="bg-blue-700 text-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 text-xl font-bold">
-          <FaTrain className="text-yellow-300 text-2xl" />
-          <span>SmartRail</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          {!isHome && (
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg text-sm font-medium transition"
+            >
+              <FaArrowLeft className="text-xs" /> Back
+            </button>
+          )}
+          <Link to="/" className="flex items-center gap-2 text-xl font-bold">
+            <FaTrain className="text-yellow-300 text-2xl" />
+            <span>SmartRail</span>
+          </Link>
+        </div>
 
         <div className="hidden md:flex items-center gap-6 text-sm font-medium">
           <Link to="/" className="hover:text-yellow-300 transition">Home</Link>
