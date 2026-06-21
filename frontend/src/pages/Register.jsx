@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 import { FaTrain } from 'react-icons/fa'
+import PasswordInput from '../components/PasswordInput'
 
 export default function Register() {
   const { register } = useAuth()
@@ -35,18 +36,21 @@ export default function Register() {
 
         <form onSubmit={submit} className="space-y-4">
           {[
-            { k:'name',     label:'Full Name',    type:'text',     ph:'John Doe' },
-            { k:'email',    label:'Email',         type:'email',    ph:'your@email.com' },
-            { k:'phone',    label:'Phone Number',  type:'tel',      ph:'9876543210' },
-            { k:'password', label:'Password',      type:'password', ph:'Min 6 characters' },
+            { k:'name',  label:'Full Name',   type:'text',  ph:'John Doe' },
+            { k:'email', label:'Email',        type:'email', ph:'your@email.com' },
+            { k:'phone', label:'Phone Number', type:'tel',   ph:'9876543210' },
           ].map(f => (
             <div key={f.k}>
               <label className="block text-sm font-medium text-gray-700 mb-1">{f.label}</label>
               <input type={f.type} className="input-field" placeholder={f.ph}
-                value={form[f.k]} onChange={set(f.k)} required={f.k !== 'phone'}
-                minLength={f.k === 'password' ? 6 : undefined}/>
+                value={form[f.k]} onChange={set(f.k)} required={f.k !== 'phone'}/>
             </div>
           ))}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <PasswordInput placeholder="Min 6 characters"
+              value={form.password} onChange={set('password')} required minLength={6}/>
+          </div>
           <button type="submit" disabled={loading} className="btn-primary w-full py-3">
             {loading ? 'Creating account...' : 'Create Account'}
           </button>

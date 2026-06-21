@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import api from '../services/api'
 import toast from 'react-hot-toast'
 import { FaTrain } from 'react-icons/fa'
+import PasswordInput from '../components/PasswordInput'
 
 export default function ResetPassword() {
   const { token } = useParams()
@@ -38,12 +39,12 @@ export default function ResetPassword() {
         <form onSubmit={submit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-            <input type="password" className="input-field" placeholder="Min 6 characters"
+            <PasswordInput placeholder="Min 6 characters"
               value={form.password} onChange={e => setForm(p => ({ ...p, password: e.target.value }))} required minLength={6}/>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-            <input type="password" className="input-field" placeholder="Re-enter password"
+            <PasswordInput placeholder="Re-enter password"
               value={form.confirm} onChange={e => setForm(p => ({ ...p, confirm: e.target.value }))} required minLength={6}/>
           </div>
           <button type="submit" disabled={loading} className="btn-primary w-full py-3">

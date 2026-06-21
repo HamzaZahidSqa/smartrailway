@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 import { FaTrain } from 'react-icons/fa'
+import PasswordInput from '../components/PasswordInput'
 
 export default function Login() {
   const { login } = useAuth()
@@ -42,7 +43,7 @@ export default function Login() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input type="password" className="input-field" placeholder="••••••••"
+            <PasswordInput placeholder="••••••••"
               value={form.password} onChange={e => setForm(p => ({ ...p, password: e.target.value }))} required/>
           </div>
           <div className="text-right">
