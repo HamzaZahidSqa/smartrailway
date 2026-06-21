@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 80">
+  <defs>
+    <linearGradient id="epBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00A94F"/>
+      <stop offset="100%" style="stop-color:#007A33"/>
+    </linearGradient>
+  </defs>
+  <rect width="220" height="80" rx="12" fill="url(#epBg)"/>
+  <!-- Leaf/tree icon -->
+  <ellipse cx="185" cy="38" rx="18" ry="22" fill="white" opacity="0.15" transform="rotate(-15 185 38)"/>
+  <ellipse cx="195" cy="42" rx="14" ry="18" fill="white" opacity="0.12" transform="rotate(10 195 42)"/>
+  <rect x="186" y="54" width="3" height="14" rx="1.5" fill="white" opacity="0.2"/>
+  <!-- easy in thin -->
+  <text x="14" y="34" font-family="Arial,sans-serif" font-weight="300" font-size="22" fill="white" letter-spacing="1">easy</text>
+  <!-- paisa in bold -->
+  <text x="14" y="63" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="26" fill="white" letter-spacing="0.5">paisa</text>
+</svg>

@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { FaTrain, FaBars, FaTimes, FaArrowLeft } from 'react-icons/fa'
+import { FaBars, FaTimes, FaArrowLeft } from 'react-icons/fa'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 
@@ -26,7 +26,7 @@ export default function Navbar() {
             </button>
           )}
           <Link to="/" className="flex items-center gap-2 text-xl font-bold">
-            <FaTrain className="text-yellow-300 text-2xl" />
+            <img src="/logo.svg" alt="SmartRail" className="h-9 w-9 rounded-full" />
             <span>SmartRail</span>
           </Link>
         </div>

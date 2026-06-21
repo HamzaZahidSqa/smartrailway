@@ -1,4 +1,4 @@
-import { FaTrain, FaArrowLeft } from 'react-icons/fa'
+import { FaArrowLeft } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
 export default function Footer() {
@@ -13,7 +13,7 @@ export default function Footer() {
           <FaArrowLeft /> Go Back
         </button>
         <div className="flex items-center justify-center gap-2 mb-2">
-          <FaTrain className="text-yellow-300 text-xl" />
+          <img src="/logo.svg" alt="SmartRail" className="h-8 w-8 rounded-full" />
           <span className="font-bold text-lg">Smart Railway Reservation System</span>
         </div>
         <p className="text-blue-300 text-sm">© {new Date().getFullYear()} SmartRail. All rights reserved.</p>

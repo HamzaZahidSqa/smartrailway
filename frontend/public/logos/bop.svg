@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 80">
+  <defs>
+    <linearGradient id="bopBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#003580"/>
+      <stop offset="100%" style="stop-color:#001F55"/>
+    </linearGradient>
+  </defs>
+  <rect width="220" height="80" rx="12" fill="url(#bopBg)"/>
+  <!-- Shield shape -->
+  <path d="M178,15 L198,15 L198,45 Q198,62 178,70 Q158,62 158,45 L158,15 Z" fill="none" stroke="#FFD700" stroke-width="2.5" opacity="0.7"/>
+  <path d="M178,21 L193,21 L193,44 Q193,57 178,64 Q163,57 163,44 L163,21 Z" fill="#FFD700" opacity="0.15"/>
+  <!-- BOP initials in shield -->
+  <text x="170" y="48" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="#FFD700" text-anchor="middle">BOP</text>
+  <!-- Text -->
+  <text x="14" y="32" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="18" fill="white" letter-spacing="0.5">Bank of</text>
+  <text x="14" y="60" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="20" fill="#FFD700" letter-spacing="0.5">Punjab</text>
+</svg>

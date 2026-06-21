@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 80">
+  <defs>
+    <linearGradient id="ublBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00205B"/>
+      <stop offset="100%" style="stop-color:#001340"/>
+    </linearGradient>
+  </defs>
+  <rect width="220" height="80" rx="12" fill="url(#ublBg)"/>
+  <!-- UBL circle emblem -->
+  <circle cx="183" cy="40" r="24" fill="none" stroke="#E30613" stroke-width="3" opacity="0.8"/>
+  <circle cx="183" cy="40" r="17" fill="#E30613" opacity="0.2"/>
+  <text x="183" y="47" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="white" text-anchor="middle">UBL</text>
+  <!-- Full name -->
+  <text x="14" y="30" font-family="Arial,sans-serif" font-weight="700" font-size="14" fill="#A0B4D4" letter-spacing="0.5">United Bank</text>
+  <text x="14" y="52" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="26" fill="white" letter-spacing="1">UBL</text>
+  <rect x="14" y="58" width="60" height="3" rx="1.5" fill="#E30613"/>
+</svg>
