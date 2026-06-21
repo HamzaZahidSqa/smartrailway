@@ -9,13 +9,14 @@ const ROLE_BADGE = {
 }
 
 export default function ManageUsers() {
-  const [users,   setUsers]   = useState([])
-  const [loading, setLoading] = useState(true)
-  const [search,  setSearch]  = useState('')
+  const [users,      setUsers]      = useState([])
+  const [adminCount, setAdminCount] = useState(0)
+  const [loading,    setLoading]    = useState(true)
+  const [search,     setSearch]     = useState('')
 
   useEffect(() => {
     api.get('/admin/users')
-      .then(r => setUsers(r.data.users || []))
+      .then(r => { setUsers(r.data.users || []); setAdminCount(r.data.adminCount || 0) })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
@@ -54,7 +55,7 @@ export default function ManageUsers() {
         {[
           { label: 'Total Users',   value: users.length,                                        color: 'purple' },
           { label: 'Passengers',    value: users.filter(u => u.role === 'passenger').length,    color: 'blue'   },
-          { label: 'Admins',        value: users.filter(u => u.role === 'admin').length,        color: 'red'    },
+          { label: 'Admins',        value: adminCount,                                          color: 'red'    },
         ].map(s => (
           <div key={s.label} className="card text-center">
             <p className={`text-3xl font-bold text-${s.color}-600`}>{s.value}</p>

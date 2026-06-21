@@ -48,6 +48,11 @@ exports.getUsers = async (req, res) => {
       .order('created_at', { ascending: false });
     if (error) throw error;
 
+    const { count: adminCount } = await supabase
+      .from('users')
+      .select('*', { count: 'exact', head: true })
+      .eq('role', 'admin');
+
     const result = await Promise.all(users.map(async (u) => {
       const { count } = await supabase
         .from('bookings')
@@ -61,7 +66,7 @@ exports.getUsers = async (req, res) => {
       };
     }));
 
-    res.json({ success: true, users: result });
+    res.json({ success: true, users: result, adminCount: adminCount || 0 });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
