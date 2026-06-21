@@ -16,6 +16,7 @@ import PNRStatus from './pages/PNRStatus'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import ManageTrains from './pages/admin/ManageTrains'
 import ManageCoaches from './pages/admin/ManageCoaches'
+import ManageUsers from './pages/admin/ManageUsers'
 import AllBookings from './pages/admin/AllBookings'
 import Reports from './pages/admin/Reports'
 
@@ -52,6 +53,7 @@ function AppRoutes() {
           <Route path="/admin/trains"        element={<AdminRoute><ManageTrains /></AdminRoute>} />
           <Route path="/admin/coaches"       element={<AdminRoute><ManageCoaches /></AdminRoute>} />
           <Route path="/admin/bookings"      element={<AdminRoute><AllBookings /></AdminRoute>} />
+          <Route path="/admin/users"         element={<AdminRoute><ManageUsers /></AdminRoute>} />
           <Route path="/admin/reports"       element={<AdminRoute><Reports /></AdminRoute>} />
         </Routes>
       </main>

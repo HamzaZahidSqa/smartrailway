@@ -39,6 +39,33 @@ exports.getDashboard = async (req, res) => {
   }
 };
 
+exports.getUsers = async (req, res) => {
+  try {
+    const { data: users, error } = await supabase
+      .from('users')
+      .select('id, name, email, phone, role, created_at')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+
+    const result = await Promise.all(users.map(async (u) => {
+      const { count } = await supabase
+        .from('bookings')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', u.id);
+      return {
+        _id: u.id, id: u.id,
+        name: u.name, email: u.email, phone: u.phone,
+        role: u.role, createdAt: u.created_at,
+        totalBookings: count || 0,
+      };
+    }));
+
+    res.json({ success: true, users: result });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 exports.getReports = async (req, res) => {
   try {
     const { type } = req.query;

@@ -22,7 +22,7 @@ export default function AdminDashboard() {
     { label:'Total Trains',    value: stats?.totalTrains,    icon:<FaTrain/>,       color:'blue',   link:'/admin/trains' },
     { label:'Total Bookings',  value: stats?.totalBookings,  icon:<FaTicketAlt/>,   color:'green',  link:'/admin/bookings' },
     { label:'Total Revenue',   value:`₹${(stats?.totalRevenue||0).toLocaleString()}`, icon:<FaRupeeSign/>, color:'yellow', link:'/admin/reports' },
-    { label:'Active Users',    value: stats?.totalUsers,     icon:<FaRoute/>,       color:'purple', link:'#' },
+    { label:'Active Users',    value: stats?.totalUsers,     icon:<FaRoute/>,       color:'purple', link:'/admin/users' },
     { label:'Confirmed',       value: stats?.confirmed,      icon:<FaTicketAlt/>,   color:'teal',   link:'/admin/bookings' },
     { label:'Cancelled',       value: stats?.cancelled,      icon:<FaTicketAlt/>,   color:'red',    link:'/admin/bookings' },
   ]
@@ -51,11 +51,12 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Links */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         {[
           { label:'Manage Trains',   to:'/admin/trains',   icon:'🚄', desc:'Add, edit, delete trains' },
           { label:'Manage Coaches',  to:'/admin/coaches',  icon:'🚃', desc:'Coach & seat management' },
           { label:'All Bookings',    to:'/admin/bookings', icon:'🎫', desc:'View all reservations' },
+          { label:'Users',           to:'/admin/users',    icon:'👥', desc:'View registered users' },
           { label:'Reports',         to:'/admin/reports',  icon:'📊', desc:'Revenue & analytics' },
         ].map(q => (
           <Link key={q.label} to={q.to} className="card text-center hover:shadow-lg hover:bg-blue-50 transition group">
