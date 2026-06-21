@@ -44,6 +44,7 @@ exports.getUsers = async (req, res) => {
     const { data: users, error } = await supabase
       .from('users')
       .select('id, name, email, phone, role, created_at')
+      .neq('role', 'admin')
       .order('created_at', { ascending: false });
     if (error) throw error;
 
