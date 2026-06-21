@@ -113,11 +113,12 @@ function OtpModal({ method, phone, onVerify, onCancel }) {
   const [sent, setSent]           = useState(false)
   const [verifying, setVerifying] = useState(false)
   const [error, setError]         = useState('')
+  const [demoCode, setDemoCode]   = useState('')
   const refs = useRef([])
 
   useEffect(() => {
     api.post('/auth/send-otp', { phone })
-      .then(() => { setSending(false); setSent(true) })
+      .then(r => { setSending(false); setSent(true); if (r.data.demoCode) setDemoCode(r.data.demoCode) })
       .catch(err => { setSending(false); setError(err.response?.data?.message || 'Failed to send OTP. Check your number.') })
   }, [phone])
 
@@ -130,9 +131,9 @@ function OtpModal({ method, phone, onVerify, onCancel }) {
   const handleKey = (e, i) => { if (e.key === 'Backspace' && !otp[i] && i > 0) refs.current[i - 1]?.focus() }
 
   const resend = () => {
-    setSent(false); setSending(true); setError(''); setOtp(['', '', '', '', '', ''])
+    setSent(false); setSending(true); setError(''); setOtp(['', '', '', '', '', '']); setDemoCode('')
     api.post('/auth/send-otp', { phone })
-      .then(() => { setSending(false); setSent(true); toast.success('OTP resent!') })
+      .then(r => { setSending(false); setSent(true); toast.success('OTP resent!'); if (r.data.demoCode) setDemoCode(r.data.demoCode) })
       .catch(err => { setSending(false); setError(err.response?.data?.message || 'Failed to resend.') })
   }
 
@@ -164,6 +165,12 @@ function OtpModal({ method, phone, onVerify, onCancel }) {
         </div>
 
         {error && <div className="bg-red-50 border border-red-200 text-red-600 rounded-lg px-3 py-2 text-sm text-center mb-4">{error}</div>}
+
+        {demoCode && (
+          <div className="bg-yellow-50 border border-yellow-300 rounded-lg px-3 py-2 text-sm text-center mb-4 text-yellow-800">
+            Demo OTP (Twilio not configured): <strong className="font-mono text-base tracking-widest">{demoCode}</strong>
+          </div>
+        )}
 
         {sent && (
           <>
@@ -198,15 +205,27 @@ export default function BookingFlow() {
   const navigate    = useNavigate()
   const { train, searchParams } = state || {}
 
-  const passengers = Number(searchParams?.passengers) || 1
+  const initPax = Number(searchParams?.passengers) || 1
   const date = searchParams?.date || new Date().toISOString().split('T')[0]
 
   const [step, setStep]         = useState(0)
   const [coach, setCoach]       = useState(null)
   const [seats, setSeats]       = useState([])
+  const [passengers, setPassengers] = useState(initPax)
   const [paxDetails, setPaxDetails] = useState(
-    Array.from({ length: passengers }, () => ({ name: '', age: '', gender: 'Male', idType: 'CNIC', idNumber: '' }))
+    Array.from({ length: initPax }, () => ({ name: '', age: '', gender: 'Male', idType: 'CNIC', idNumber: '' }))
   )
+
+  const changePassengers = (n) => {
+    const clamped = Math.max(1, Math.min(6, n))
+    setPassengers(clamped)
+    setSeats([])
+    setPaxDetails(prev => {
+      if (clamped > prev.length)
+        return [...prev, ...Array.from({ length: clamped - prev.length }, () => ({ name: '', age: '', gender: 'Male', idType: 'CNIC', idNumber: '' }))]
+      return prev.slice(0, clamped)
+    })
+  }
   const [paymentId, setPaymentId]   = useState('JazzCash')
   const [paymentDetails, setPaymentDetails] = useState({ phone: '', accountTitle: '', accountNumber: '', iban: '' })
 
@@ -229,8 +248,8 @@ export default function BookingFlow() {
   const selectMethod  = (id) => { setPaymentId(id); setPaymentDetails({ phone: '', accountTitle: '', accountNumber: '', iban: '' }) }
 
   const isPaymentValid = () => {
-    if (selectedM?.type === 'mobile') return paymentDetails.phone.replace(/\D/g, '').length >= 10
-    if (selectedM?.type === 'bank')   return paymentDetails.accountTitle.trim() && paymentDetails.accountNumber.trim()
+    if (selectedM?.type === 'mobile') return paymentDetails.phone.replace(/\D/g, '').length === 11
+    if (selectedM?.type === 'bank')   return paymentDetails.accountTitle.trim().length > 0 && paymentDetails.accountNumber.replace(/\D/g, '').length > 0
     return false
   }
 
@@ -313,6 +332,20 @@ export default function BookingFlow() {
       {step === 0 && (
         <div className="card">
           <h2 className="text-xl font-bold mb-4">Select Coach Class</h2>
+
+          {/* Passenger count stepper */}
+          <div className="flex items-center gap-4 mb-6 p-3 bg-blue-50 rounded-xl border border-blue-100">
+            <span className="text-sm font-semibold text-blue-800">Passengers:</span>
+            <div className="flex items-center gap-3">
+              <button onClick={() => changePassengers(passengers - 1)} disabled={passengers <= 1}
+                className="w-8 h-8 rounded-full border-2 border-blue-300 flex items-center justify-center text-blue-700 hover:bg-blue-100 disabled:opacity-30 font-bold text-lg">−</button>
+              <span className="text-2xl font-bold text-blue-700 w-8 text-center">{passengers}</span>
+              <button onClick={() => changePassengers(passengers + 1)} disabled={passengers >= 6}
+                className="w-8 h-8 rounded-full border-2 border-blue-300 flex items-center justify-center text-blue-700 hover:bg-blue-100 disabled:opacity-30 font-bold text-lg">+</button>
+            </div>
+            <span className="text-xs text-blue-500 ml-1">(max 6)</span>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {train.coaches?.filter(c => c.availableSeats >= passengers).map(c => (
               <button key={c._id} onClick={() => { setCoach(c); next() }}
@@ -379,9 +412,25 @@ export default function BookingFlow() {
                   </select>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-600 mb-1">ID Number</label>
-                  <input className="input-field" value={p.idNumber} onChange={e => updatePax(i, 'idNumber', e.target.value)}
-                    placeholder={p.idType === 'CNIC' ? '12345-1234567-1' : 'ID number'} />
+                  <label className="block text-sm font-medium text-gray-600 mb-1">
+                    ID Number {p.idType === 'CNIC' && <span className="text-xs text-gray-400">(13 digits)</span>}
+                  </label>
+                  <input
+                    className="input-field"
+                    value={p.idNumber}
+                    inputMode={p.idType === 'CNIC' ? 'numeric' : 'text'}
+                    maxLength={p.idType === 'CNIC' ? 13 : 50}
+                    onChange={e => {
+                      const val = p.idType === 'CNIC'
+                        ? e.target.value.replace(/\D/g, '').slice(0, 13)
+                        : e.target.value
+                      updatePax(i, 'idNumber', val)
+                    }}
+                    placeholder={p.idType === 'CNIC' ? '3420XXXXXXXXX (13 digits)' : 'ID number'}
+                  />
+                  {p.idType === 'CNIC' && p.idNumber.length > 0 && p.idNumber.length < 13 && (
+                    <p className="text-xs text-orange-500 mt-1">{13 - p.idNumber.length} more digit(s) required</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -450,11 +499,19 @@ export default function BookingFlow() {
               </div>
 
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                <FaMobileAlt className="inline mr-1" /> Your {selectedM.label} Number *
+                <FaMobileAlt className="inline mr-1" /> Your {selectedM.label} Number * <span className="text-xs font-normal text-gray-400">(11 digits)</span>
               </label>
-              <input className="input-field text-lg tracking-wider" value={paymentDetails.phone}
-                onChange={e => updatePayment('phone', e.target.value)}
-                placeholder="03XX-XXXXXXX" maxLength={13} />
+              <input
+                className="input-field text-lg tracking-wider"
+                value={paymentDetails.phone}
+                inputMode="numeric"
+                maxLength={11}
+                onChange={e => updatePayment('phone', e.target.value.replace(/\D/g, '').slice(0, 11))}
+                placeholder="03XXXXXXXXX"
+              />
+              {paymentDetails.phone.length > 0 && paymentDetails.phone.length < 11 && (
+                <p className="text-xs text-orange-500 mt-1">{11 - paymentDetails.phone.length} more digit(s) required</p>
+              )}
               <p className="text-xs text-gray-400 mt-1">An OTP will be sent to verify your payment.</p>
             </div>
           )}
@@ -493,8 +550,13 @@ export default function BookingFlow() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Account Number *</label>
-                  <input className="input-field" value={paymentDetails.accountNumber}
-                    onChange={e => updatePayment('accountNumber', e.target.value)} placeholder="Your account number" />
+                  <input
+                    className="input-field"
+                    value={paymentDetails.accountNumber}
+                    inputMode="numeric"
+                    onChange={e => updatePayment('accountNumber', e.target.value.replace(/\D/g, ''))}
+                    placeholder="Digits only"
+                  />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Your IBAN (optional)</label>
