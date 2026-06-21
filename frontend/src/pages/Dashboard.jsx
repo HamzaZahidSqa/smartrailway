@@ -114,7 +114,7 @@ export default function Dashboard() {
                   <span className="text-xl font-bold text-green-600">₹{b.totalFare}</span>
                   <div className="flex gap-2">
                     <Link to={`/ticket/${b._id}`} className="btn-secondary text-xs px-3 py-1.5">View Ticket</Link>
-                    {b.status === 'Confirmed' && new Date(b.travelDate) > now && (
+                    {b.status === 'Confirmed' && new Date(b.travelDate).setHours(23,59,59,999) >= now.getTime() && (
                       <button onClick={() => cancel(b._id)} className="btn-danger text-xs px-3 py-1.5">Cancel</button>
                     )}
                   </div>
