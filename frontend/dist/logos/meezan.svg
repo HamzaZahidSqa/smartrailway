@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 80">
+  <defs>
+    <linearGradient id="mzBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#006B3F"/>
+      <stop offset="100%" style="stop-color:#004D2D"/>
+    </linearGradient>
+  </defs>
+  <rect width="220" height="80" rx="12" fill="url(#mzBg)"/>
+  <!-- Crescent moon -->
+  <circle cx="178" cy="40" r="22" fill="white" opacity="0.18"/>
+  <circle cx="188" cy="36" r="17" fill="#005533" opacity="0.9"/>
+  <!-- Star -->
+  <polygon points="174,24 175.5,29 180.5,29 176.5,32 178,37 174,34 170,37 171.5,32 167.5,29 172.5,29" fill="white" opacity="0.5"/>
+  <!-- Text -->
+  <text x="14" y="33" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="20" fill="white" letter-spacing="0.5">Meezan</text>
+  <text x="14" y="60" font-family="Arial,sans-serif" font-weight="400" font-size="18" fill="#90EE90" letter-spacing="1">Bank</text>
+</svg>
