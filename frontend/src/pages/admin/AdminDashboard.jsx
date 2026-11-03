@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../../services/api'
 import BookingStatusBadge from '../../components/BookingStatusBadge'
-import { FaTrain, FaTicketAlt, FaRupeeSign, FaRoute, FaChartBar } from 'react-icons/fa'
+import { FaTrain, FaTicketAlt, FaMoneyBillWave, FaRoute, FaChartBar } from 'react-icons/fa'
 
 export default function AdminDashboard() {
   const [stats,    setStats]    = useState(null)
@@ -21,7 +21,7 @@ export default function AdminDashboard() {
   const cards = [
     { label:'Total Trains',    value: stats?.totalTrains,    icon:<FaTrain/>,       color:'blue',   link:'/admin/trains' },
     { label:'Total Bookings',  value: stats?.totalBookings,  icon:<FaTicketAlt/>,   color:'green',  link:'/admin/bookings' },
-    { label:'Total Revenue',   value:`₹${(stats?.totalRevenue||0).toLocaleString()}`, icon:<FaRupeeSign/>, color:'yellow', link:'/admin/reports' },
+    { label:'Total Revenue',   value:`Rs. ${(stats?.totalRevenue||0).toLocaleString()}`, icon:<FaMoneyBillWave/>, color:'yellow', link:'/admin/reports' },
     { label:'Active Users',    value: stats?.totalUsers,     icon:<FaRoute/>,       color:'purple', link:'/admin/users' },
     { label:'Confirmed',       value: stats?.confirmed,      icon:<FaTicketAlt/>,   color:'teal',   link:'/admin/bookings' },
     { label:'Cancelled',       value: stats?.cancelled,      icon:<FaTicketAlt/>,   color:'red',    link:'/admin/bookings' },
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
                   <td className="p-3">{b.train?.trainName}</td>
                   <td className="p-3 text-gray-500">{b.fromCity} → {b.toCity}</td>
                   <td className="p-3 text-gray-500">{new Date(b.travelDate).toLocaleDateString()}</td>
-                  <td className="p-3 font-semibold text-green-600">₹{b.totalFare}</td>
+                  <td className="p-3 font-semibold text-green-600">Rs. {b.totalFare}</td>
                   <td className="p-3"><BookingStatusBadge status={b.status}/></td>
                 </tr>
               ))}

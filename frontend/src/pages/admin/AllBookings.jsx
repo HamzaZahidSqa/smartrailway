@@ -59,7 +59,7 @@ export default function AllBookings() {
                   <td className="p-3 text-gray-500">{new Date(b.travelDate).toLocaleDateString()}</td>
                   <td className="p-3 text-gray-500">{b.coach?.coachType}</td>
                   <td className="p-3 font-mono text-xs">{b.seats?.join(', ')}</td>
-                  <td className="p-3 font-bold text-green-600">₹{b.totalFare}</td>
+                  <td className="p-3 font-bold text-green-600">Rs. {b.totalFare}</td>
                   <td className="p-3"><BookingStatusBadge status={b.status}/></td>
                 </tr>
               ))}

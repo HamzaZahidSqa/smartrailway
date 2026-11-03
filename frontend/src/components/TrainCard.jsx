@@ -57,7 +57,7 @@ export default function TrainCard({ train, searchParams }) {
               <span className="text-sm text-gray-600 flex items-center gap-1">
                 <FaChair className="text-green-500"/> {coach.availableSeats} seats
               </span>
-              <span className="font-bold text-blue-700">₹{coach.farePerSeat}</span>
+              <span className="font-bold text-blue-700">Rs. {coach.farePerSeat}</span>
             </div>
           ))}
           <button

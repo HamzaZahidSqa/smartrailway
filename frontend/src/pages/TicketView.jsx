@@ -141,7 +141,7 @@ export default function TicketView() {
         {/* Fare */}
         <div className="flex justify-between items-center pt-4 border-t border-gray-200">
           <span className="font-semibold">Total Fare Paid</span>
-          <span className="text-2xl font-bold text-green-600">₹{booking?.totalFare}</span>
+          <span className="text-2xl font-bold text-green-600">Rs. {booking?.totalFare}</span>
         </div>
 
         <p className="text-xs text-gray-400 text-center mt-4">This is a computer-generated ticket. No signature required.</p>

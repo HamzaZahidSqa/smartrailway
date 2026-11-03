@@ -26,7 +26,7 @@ export default function Dashboard() {
     if (!confirm('Cancel this booking?')) return
     try {
       const { data } = await api.put(`/bookings/${id}/cancel`)
-      toast.success(`Cancelled. Refund: ₹${data.refundAmount}`)
+      toast.success(`Cancelled. Refund: Rs. ${data.refundAmount}`)
       load()
     } catch (err) {
       toast.error(err.response?.data?.message || 'Cancel failed')
@@ -117,7 +117,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-2 items-end">
-                  <span className="text-xl font-bold text-green-600">₹{b.totalFare}</span>
+                  <span className="text-xl font-bold text-green-600">Rs. {b.totalFare}</span>
                   <div className="flex gap-2">
                     <Link to={`/ticket/${b._id}`} className="btn-secondary text-xs px-3 py-1.5">View Ticket</Link>
                     {b.status === 'Confirmed' && new Date(b.travelDate).setHours(23,59,59,999) >= now.getTime() && (
@@ -125,7 +125,7 @@ export default function Dashboard() {
                     )}
                   </div>
                   {b.status === 'Cancelled' && b.refundAmount > 0 && (
-                    <p className="text-xs text-green-600">Refund: ₹{b.refundAmount}</p>
+                    <p className="text-xs text-green-600">Refund: Rs. {b.refundAmount}</p>
                   )}
                 </div>
               </div>

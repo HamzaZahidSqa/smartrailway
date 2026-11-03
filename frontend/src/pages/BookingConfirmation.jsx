@@ -100,7 +100,7 @@ export default function BookingConfirmation() {
         {/* Fare */}
         <div className="flex justify-between items-center pt-4 border-t border-gray-200">
           <span className="font-semibold text-gray-700">Total Paid</span>
-          <span className="text-2xl font-bold text-green-600">₹{booking.totalFare}</span>
+          <span className="text-2xl font-bold text-green-600">Rs. {booking.totalFare}</span>
         </div>
       </div>
 

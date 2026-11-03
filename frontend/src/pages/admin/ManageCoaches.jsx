@@ -82,7 +82,7 @@ export default function ManageCoaches() {
                   <td className="p-3 text-center">{c.totalSeats}</td>
                   <td className="p-3 text-center text-green-600 font-semibold">{c.availableSeats}</td>
                   <td className="p-3 text-center text-red-600">{c.bookedSeats}</td>
-                  <td className="p-3 font-semibold text-blue-700">₹{c.farePerSeat}</td>
+                  <td className="p-3 font-semibold text-blue-700">Rs. {c.farePerSeat}</td>
                   <td className="p-3">
                     <div className="flex gap-2">
                       <button onClick={() => openEdit(c)} className="text-blue-500 hover:text-blue-700"><FaEdit/></button>
@@ -126,7 +126,7 @@ export default function ManageCoaches() {
                     <input type="number" className="input-field" value={form.totalSeats} onChange={e => set('totalSeats', Number(e.target.value))} required min={1}/>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Fare per Seat (₹)</label>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Fare per Seat (Rs.)</label>
                     <input type="number" className="input-field" value={form.farePerSeat} onChange={e => set('farePerSeat', Number(e.target.value))} required min={0}/>
                   </div>
                 </div>

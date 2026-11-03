@@ -55,7 +55,7 @@ export default function Reports() {
                           <div className="flex-1 bg-gray-100 rounded-full h-6 relative">
                             <div className="bg-blue-500 h-6 rounded-full transition-all" style={{ width: `${pct}%` }}/>
                           </div>
-                          <span className="text-sm font-semibold text-gray-700 w-24 text-right">₹{d.revenue?.toLocaleString()}</span>
+                          <span className="text-sm font-semibold text-gray-700 w-24 text-right">Rs. {d.revenue?.toLocaleString()}</span>
                           <span className="text-sm text-gray-500 w-16">{d.count} bookings</span>
                         </div>
                       )
@@ -67,7 +67,7 @@ export default function Reports() {
                       <tr key={i} className="border-b border-gray-100">
                         <td className="p-3">{MONTHS[d._id.month]} {d._id.year}</td>
                         <td className="p-3 text-right font-semibold">{d.count}</td>
-                        <td className="p-3 text-right font-bold text-green-600">₹{d.revenue?.toLocaleString()}</td>
+                        <td className="p-3 text-right font-bold text-green-600">Rs. {d.revenue?.toLocaleString()}</td>
                       </tr>
                     ))}</tbody>
                   </table>
@@ -87,7 +87,7 @@ export default function Reports() {
                       <td className="p-3 text-gray-400">{i+1}</td>
                       <td className="p-3 font-medium">{d._id.from} → {d._id.to}</td>
                       <td className="p-3 text-right font-semibold">{d.count}</td>
-                      <td className="p-3 text-right font-bold text-green-600">₹{d.revenue?.toLocaleString()}</td>
+                      <td className="p-3 text-right font-bold text-green-600">Rs. {d.revenue?.toLocaleString()}</td>
                     </tr>
                   ))}</tbody>
                 </table>
@@ -106,7 +106,7 @@ export default function Reports() {
                       <td className="p-3 font-mono text-blue-600 text-xs">{b.pnr}</td>
                       <td className="p-3">{b.user?.name}</td>
                       <td className="p-3">{b.train?.trainName}</td>
-                      <td className="p-3 font-bold text-green-600">₹{b.totalFare}</td>
+                      <td className="p-3 font-bold text-green-600">Rs. {b.totalFare}</td>
                       <td className="p-3 text-gray-400 text-xs">{new Date(b.createdAt).toLocaleTimeString()}</td>
                     </tr>
                   ))}</tbody>

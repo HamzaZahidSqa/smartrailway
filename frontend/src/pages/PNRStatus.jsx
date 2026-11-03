@@ -73,8 +73,8 @@ export default function PNRStatus() {
             <div className="flex justify-between"><span className="text-gray-500">Class:</span><span className="font-medium">{b.coach?.coachType} ({b.coach?.coachNumber})</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Seats:</span><span className="font-mono font-medium">{b.seats?.join(', ')}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Passengers:</span><span className="font-medium">{b.passengers?.length}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Total Fare:</span><span className="font-bold text-green-600">₹{b.totalFare}</span></div>
-            {b.status === 'Cancelled' && <div className="flex justify-between"><span className="text-gray-500">Refund:</span><span className="font-medium text-orange-600">₹{b.refundAmount}</span></div>}
+            <div className="flex justify-between"><span className="text-gray-500">Total Fare:</span><span className="font-bold text-green-600">Rs. {b.totalFare}</span></div>
+            {b.status === 'Cancelled' && <div className="flex justify-between"><span className="text-gray-500">Refund:</span><span className="font-medium text-orange-600">Rs. {b.refundAmount}</span></div>}
           </div>
         </div>
       )}
