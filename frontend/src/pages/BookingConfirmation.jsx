@@ -1,14 +1,29 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../services/api'
 import BookingStatusBadge from '../components/BookingStatusBadge'
-import { FaTrain, FaCheckCircle, FaDownload } from 'react-icons/fa'
+import toast from 'react-hot-toast'
+import { FaTrain, FaCheckCircle, FaDownload, FaFilePdf } from 'react-icons/fa'
+import downloadElementAsPdf from '../utils/downloadPdf'
 
 export default function BookingConfirmation() {
   const { id } = useParams()
   const [booking, setBooking] = useState(null)
   const [ticket,  setTicket]  = useState(null)
   const [loading, setLoading] = useState(true)
+  const [downloading, setDownloading] = useState(false)
+  const receiptRef = useRef(null)
+
+  const downloadPdf = async () => {
+    if (!receiptRef.current) return
+    setDownloading(true)
+    try {
+      await downloadElementAsPdf(receiptRef.current, `SmartRail-Receipt-${booking.pnr}.pdf`)
+      toast.success('Receipt downloaded')
+    } catch (err) {
+      toast.error('Could not generate PDF. Please try again.')
+    } finally { setDownloading(false) }
+  }
 
   useEffect(() => {
     api.get(`/bookings/${id}`)
@@ -28,7 +43,7 @@ export default function BookingConfirmation() {
         <p className="text-gray-500">Your ticket has been booked successfully</p>
       </div>
 
-      <div className="card border-2 border-green-200">
+      <div ref={receiptRef} className="card border-2 border-green-200">
         {/* Ticket header */}
         <div className="flex justify-between items-start mb-6 pb-4 border-b border-dashed border-gray-300">
           <div>
@@ -89,9 +104,13 @@ export default function BookingConfirmation() {
         </div>
       </div>
 
-      <div className="flex gap-3 mt-6">
-        <Link to={`/ticket/${booking._id}`} className="btn-primary flex-1 flex items-center justify-center gap-2 py-3">
-          <FaDownload/> View / Download Ticket
+      <div className="flex flex-col sm:flex-row gap-3 mt-6">
+        <button type="button" onClick={downloadPdf} disabled={downloading}
+          className="btn-primary flex-1 flex items-center justify-center gap-2 py-3">
+          <FaFilePdf/> {downloading ? 'Preparing PDF...' : 'Download PDF'}
+        </button>
+        <Link to={`/ticket/${booking._id}`} className="btn-secondary flex-1 flex items-center justify-center gap-2 py-3">
+          <FaDownload/> View Ticket
         </Link>
         <Link to="/dashboard" className="btn-secondary flex-1 flex items-center justify-center py-3">My Bookings</Link>
       </div>

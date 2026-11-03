@@ -1,7 +1,9 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../services/api'
-import { FaTrain, FaPrint } from 'react-icons/fa'
+import toast from 'react-hot-toast'
+import { FaTrain, FaPrint, FaFilePdf } from 'react-icons/fa'
+import downloadElementAsPdf from '../utils/downloadPdf'
 import BookingStatusBadge from '../components/BookingStatusBadge'
 
 export default function TicketView() {
@@ -17,7 +19,20 @@ export default function TicketView() {
       .finally(() => setLoading(false))
   }, [bookingId])
 
+  const [downloading, setDownloading] = useState(false)
+
   const print = () => window.print()
+
+  const downloadPdf = async () => {
+    if (!printRef.current) return
+    setDownloading(true)
+    try {
+      await downloadElementAsPdf(printRef.current, `SmartRail-Ticket-${data.ticket.booking?.pnr || data.ticket.ticketNumber}.pdf`)
+      toast.success('Ticket downloaded')
+    } catch (err) {
+      toast.error('Could not generate PDF. Please try again.')
+    } finally { setDownloading(false) }
+  }
 
   if (loading) return <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"/></div>
   if (!data?.ticket) return <div className="text-center py-20 text-red-500">Ticket not found</div>
@@ -29,9 +44,14 @@ export default function TicketView() {
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-4 print:hidden">
         <Link to="/dashboard" className="text-blue-600 hover:underline text-sm">← My Bookings</Link>
-        <button onClick={print} className="btn-primary flex items-center gap-2">
-          <FaPrint/> Print Ticket
-        </button>
+        <div className="flex gap-2">
+          <button onClick={downloadPdf} disabled={downloading} className="btn-primary flex items-center gap-2">
+            <FaFilePdf/> {downloading ? 'Preparing...' : 'Download PDF'}
+          </button>
+          <button onClick={print} className="btn-secondary flex items-center gap-2">
+            <FaPrint/> Print Ticket
+          </button>
+        </div>
       </div>
 
       <div ref={printRef} className="card border-2 border-blue-200 print:shadow-none print:border-black">
