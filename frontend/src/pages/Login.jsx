@@ -13,16 +13,22 @@ export default function Login() {
 
   const [form, setForm] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const submit = async (e) => {
     e.preventDefault()
+    setError('')
     setLoading(true)
     try {
       const data = await login(form.email, form.password)
       toast.success(`Welcome back, ${data.user.name}!`)
       navigate(data.user.role === 'admin' ? '/admin' : from, { replace: true })
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed')
+      const msg = err.response?.status === 401
+        ? 'Incorrect email or password. Please try again.'
+        : err.response?.data?.message || 'Login failed. Please try again.'
+      setError(msg)
+      toast.error(msg)
     } finally { setLoading(false) }
   }
 
@@ -36,15 +42,20 @@ export default function Login() {
         </div>
 
         <form onSubmit={submit} className="space-y-4">
+          {error && (
+            <div role="alert" className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+              {error}
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input type="email" className="input-field" placeholder="your@email.com"
-              value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} required/>
+              value={form.email} onChange={e => { setError(''); setForm(p => ({ ...p, email: e.target.value })) }} required/>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <PasswordInput placeholder="••••••••"
-              value={form.password} onChange={e => setForm(p => ({ ...p, password: e.target.value }))} required/>
+              value={form.password} onChange={e => { setError(''); setForm(p => ({ ...p, password: e.target.value })) }} required/>
           </div>
           <div className="text-right">
             <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">Forgot password?</Link>

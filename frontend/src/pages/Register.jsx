@@ -10,18 +10,22 @@ export default function Register() {
   const navigate = useNavigate()
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' })
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const set = (k) => (e) => setForm(p => ({ ...p, [k]: e.target.value }))
+  const set = (k) => (e) => { setError(''); setForm(p => ({ ...p, [k]: e.target.value })) }
 
   const submit = async (e) => {
     e.preventDefault()
+    setError('')
     setLoading(true)
     try {
       await register(form)
       toast.success('Account created!')
       navigate('/dashboard')
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Registration failed')
+      const msg = err.response?.data?.message || 'Registration failed. Please try again.'
+      setError(msg)
+      toast.error(msg)
     } finally { setLoading(false) }
   }
 
@@ -35,6 +39,11 @@ export default function Register() {
         </div>
 
         <form onSubmit={submit} className="space-y-4">
+          {error && (
+            <div role="alert" className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+              {error}
+            </div>
+          )}
           {[
             { k:'name',  label:'Full Name',   type:'text',  ph:'John Doe' },
             { k:'email', label:'Email',        type:'email', ph:'your@email.com' },
