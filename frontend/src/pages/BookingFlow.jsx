@@ -218,6 +218,9 @@ export default function BookingFlow() {
     Array.from({ length: initPax }, () => ({ name: '', age: '', gender: 'Male', idType: 'CNIC', idNumber: '' }))
   )
 
+  // 'each' = a form per passenger, 'one' = lead passenger's details are used for every seat
+  const [paxMode, setPaxMode] = useState('each')
+
   const changePassengers = (n) => {
     const clamped = Math.max(1, Math.min(6, n))
     setPassengers(clamped)
@@ -246,6 +249,13 @@ export default function BookingFlow() {
   const next = () => setStep(s => s + 1)
   const prev = () => setStep(s => s - 1)
   const updatePax     = (i, k, v) => setPaxDetails(p => p.map((x, idx) => idx === i ? { ...x, [k]: v } : x))
+  const continueFromPax = () => {
+    if (paxMode === 'one') setPaxDetails(p => p.map(() => ({ ...p[0] })))
+    next()
+  }
+  const paxFormsValid = paxMode === 'one'
+    ? Boolean(paxDetails[0]?.name && paxDetails[0]?.age)
+    : paxDetails.every(p => p.name && p.age)
   const updatePayment = (k, v)    => setPaymentDetails(p => ({ ...p, [k]: v }))
   const selectMethod  = (id) => { setPaymentId(id); setPaymentDetails({ phone: '', accountTitle: '', accountNumber: '', iban: '' }) }
 
@@ -383,11 +393,28 @@ export default function BookingFlow() {
       {step === 2 && (
         <div className="card">
           <h2 className="text-xl font-bold mb-4">Passenger Details</h2>
-          {paxDetails.map((p, i) => (
+          {passengers > 1 && (
+            <div className="mb-5 p-4 bg-blue-50 border border-blue-100 rounded-xl">
+              <p className="text-sm font-medium text-gray-700 mb-2">You are booking {passengers} seats. How do you want to add passenger details?</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {[
+                  ['each', 'Each passenger separately', 'Enter name, age and ID for all ' + passengers + ' passengers'],
+                  ['one',  'One passenger only',        'Lead passenger details will be used for all ' + passengers + ' seats'],
+                ].map(([v, title, desc]) => (
+                  <button key={v} type="button" onClick={() => setPaxMode(v)}
+                    className={`text-left p-3 rounded-lg border-2 transition ${paxMode === v ? 'border-blue-600 bg-white shadow' : 'border-gray-200 bg-white/60 hover:border-blue-300'}`}>
+                    <span className="block font-semibold text-sm text-gray-800">{title}</span>
+                    <span className="block text-xs text-gray-500 mt-0.5">{desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {(paxMode === 'one' ? paxDetails.slice(0, 1) : paxDetails).map((p, i) => (
             <div key={i} className="mb-6 p-4 border border-gray-200 rounded-xl">
               <h3 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <FaUser className="text-blue-500" /> Passenger {i + 1}
-                <span className="text-blue-600 font-mono text-sm">— {seats[i]?.seatNumber}</span>
+                <FaUser className="text-blue-500" /> {paxMode === 'one' && passengers > 1 ? 'Lead Passenger' : `Passenger ${i + 1}`}
+                <span className="text-blue-600 font-mono text-sm">— {paxMode === 'one' && passengers > 1 ? seats.map(s => s.seatNumber).join(', ') : seats[i]?.seatNumber}</span>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -436,7 +463,7 @@ export default function BookingFlow() {
           ))}
           <div className="flex gap-3">
             <button onClick={prev} className="btn-secondary flex-1">Back</button>
-            <button onClick={next} disabled={paxDetails.some(p => !p.name || !p.age)} className="btn-primary flex-1">
+            <button onClick={continueFromPax} disabled={!paxFormsValid} className="btn-primary flex-1">
               Continue to Payment
             </button>
           </div>
