@@ -48,3 +48,6 @@ tmp/
 
 # Frontend build output
 frontend/dist/
+
+.vercel
+.env*
