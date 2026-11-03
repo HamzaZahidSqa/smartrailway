@@ -176,7 +176,7 @@ function OtpModal({ method, phone, onVerify, onCancel }) {
 
         {sent && (
           <>
-            <p className="text-xs text-center text-gray-400 mb-4">Enter the 6-digit code sent to your {method?.label} number</p>
+            <p className="text-xs text-center text-gray-400 mb-4">Enter the 6-digit code sent to your registered mobile number</p>
             <div className="flex gap-2 justify-center mb-6">
               {otp.map((d, i) => (
                 <input key={i} ref={el => refs.current[i] = el} type="text" inputMode="numeric"
@@ -261,7 +261,9 @@ export default function BookingFlow() {
 
   const isPaymentValid = () => {
     if (selectedM?.type === 'mobile') return paymentDetails.phone.replace(/\D/g, '').length === 11
-    if (selectedM?.type === 'bank')   return paymentDetails.accountTitle.trim().length > 0 && paymentDetails.accountNumber.replace(/\D/g, '').length > 0
+    if (selectedM?.type === 'bank')   return paymentDetails.accountTitle.trim().length > 0
+      && paymentDetails.accountNumber.replace(/\D/g, '').length > 0
+      && paymentDetails.phone.replace(/\D/g, '').length === 11
     return false
   }
 
@@ -295,8 +297,8 @@ export default function BookingFlow() {
 
   /* ─ Confirm button clicked ─ */
   const handleConfirm = () => {
-    if (selectedM?.type === 'mobile') setShowOtp(true)
-    else runPaymentAndBook()
+    // Both mobile wallets and bank transfers are verified with an OTP sent to the registered number
+    setShowOtp(true)
   }
 
   return (
@@ -584,7 +586,19 @@ export default function BookingFlow() {
                     placeholder="Digits only"
                   />
                 </div>
-                <div className="sm:col-span-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Registered Mobile Number *</label>
+                  <input
+                    className="input-field"
+                    value={paymentDetails.phone}
+                    inputMode="numeric"
+                    maxLength={11}
+                    onChange={e => updatePayment('phone', e.target.value.replace(/\D/g, '').slice(0, 11))}
+                    placeholder="03XXXXXXXXX"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">OTP for this payment will be sent to this number</p>
+                </div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Your IBAN (optional)</label>
                   <input className="input-field" value={paymentDetails.iban}
                     onChange={e => updatePayment('iban', e.target.value)} placeholder="PK00 XXXX 0000 0000 0000 0000" />
