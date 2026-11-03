@@ -39,10 +39,10 @@ export default function Dashboard() {
   const displayed = tab === 'upcoming' ? upcoming : history
 
   const stats = [
-    { label:'Total Bookings', value: bookings.length, icon:<FaTicketAlt/>, color:'blue' },
-    { label:'Upcoming Trips', value: upcoming.length, icon:<FaTrain/>, color:'green' },
-    { label:'Past Trips',     value: history.length,  icon:<FaHistory/>, color:'purple' },
-    { label:'Cancelled',      value: bookings.filter(b => b.status==='Cancelled').length, icon:<FaTimes/>, color:'red' },
+    { label:'Total Bookings', value: bookings.length, icon:<FaTicketAlt/>, color:'text-blue-600' },
+    { label:'Upcoming Trips', value: upcoming.length, icon:<FaTrain/>, color:'text-green-600' },
+    { label:'Past Trips',     value: history.length,  icon:<FaHistory/>, color:'text-purple-600' },
+    { label:'Cancelled',      value: bookings.filter(b => b.status==='Cancelled').length, icon:<FaTimes/>, color:'text-red-600' },
   ]
 
   return (
@@ -58,11 +58,17 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Quick actions */}
+      <div className="flex flex-wrap gap-3 mb-8">
+        <Link to="/search" className="btn-primary flex items-center gap-2"><FaTrain/> Book a Train</Link>
+        <Link to="/pnr-status" className="btn-secondary flex items-center gap-2"><FaTicketAlt/> Check PNR Status</Link>
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {stats.map(s => (
           <div key={s.label} className="card text-center">
-            <div className={`text-3xl font-bold text-${s.color}-600 mb-1`}>{s.value}</div>
+            <div className={`text-3xl font-bold ${s.color} mb-1`}>{s.value}</div>
             <div className="text-gray-500 text-sm flex items-center justify-center gap-1">{s.icon} {s.label}</div>
           </div>
         ))}

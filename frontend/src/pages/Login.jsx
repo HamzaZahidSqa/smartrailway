@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
@@ -6,10 +6,15 @@ import { FaTrain } from 'react-icons/fa'
 import PasswordInput from '../components/PasswordInput'
 
 export default function Login() {
-  const { login } = useAuth()
+  const { login, user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const from = location.state?.from || '/'
+  // Go back to the page the user was trying to open, otherwise to their dashboard
+  const from = location.state?.from || '/dashboard'
+
+  useEffect(() => {
+    if (user) navigate(user.role === 'admin' ? '/admin' : '/dashboard', { replace: true })
+  }, [user, navigate])
 
   const [form, setForm] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)

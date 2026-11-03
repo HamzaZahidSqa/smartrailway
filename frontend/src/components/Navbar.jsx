@@ -39,7 +39,7 @@ export default function Navbar() {
             <>
               {user.role === 'admin'
                 ? <Link to="/admin" className="hover:text-yellow-300 transition">Admin Panel</Link>
-                : <Link to="/dashboard" className="hover:text-yellow-300 transition">My Bookings</Link>
+                : <Link to="/dashboard" className="hover:text-yellow-300 transition">My Dashboard</Link>
               }
               <button onClick={handleLogout} className="bg-red-500 hover:bg-red-600 px-4 py-1.5 rounded-lg transition">Logout</button>
             </>
@@ -65,7 +65,7 @@ export default function Navbar() {
             <>
               {user.role === 'admin'
                 ? <Link to="/admin"     onClick={() => setOpen(false)} className="py-2 hover:text-yellow-300">Admin Panel</Link>
-                : <Link to="/dashboard" onClick={() => setOpen(false)} className="py-2 hover:text-yellow-300">My Bookings</Link>
+                : <Link to="/dashboard" onClick={() => setOpen(false)} className="py-2 hover:text-yellow-300">My Dashboard</Link>
               }
               <button onClick={() => { handleLogout(); setOpen(false) }} className="text-left py-2 text-red-300">Logout</button>
             </>
