@@ -45,3 +45,6 @@ temp/
 tmp/
 .vercel
 .playwright-mcp/
+
+# Frontend build output
+frontend/dist/

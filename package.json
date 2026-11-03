@@ -2,7 +2,8 @@
   "name": "smart-railway-reservation",
   "version": "1.0.0",
   "scripts": {
-    "build": "cd frontend && npm install && npm run build"
+    "start": "node backend/server.js",
+    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install --omit=dev"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -12,10 +12,12 @@
    - **Branch**: main
    - **Root Directory**: `backend`
    - **Build Command**: `npm install`
-   - **Start Command**: `npm run dev`
+   - **Start Command**: `npm start`
 5. In "Environment", add:
-   - Key: `MONGODB_URI`
-     Value: Your MongoDB connection string (from MongoDB Atlas or local)
+   - Key: `SUPABASE_URL`
+     Value: Your Supabase project URL
+   - Key: `SUPABASE_SERVICE_ROLE_KEY`
+     Value: Your Supabase service role key
    - Key: `JWT_SECRET`
      Value: A strong random string for JWT signing
    - Key: `PORT`
@@ -62,7 +64,8 @@ If you prefer to deploy everything on Render.com:
 ### Backend (Render.com)
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/smartrailway` |
+| `SUPABASE_URL` | Supabase project URL | `https://xxxx.supabase.co` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (Project Settings → API) | `eyJ...` |
 | `JWT_SECRET` | Secret for JWT tokens | `your-super-secret-jwt-key-change-in-prod` |
 | `PORT` | Port to listen on | `10000` (auto-set by Render) |
 
