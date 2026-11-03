@@ -9,11 +9,11 @@ export default function Login() {
   const { login, user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  // Go back to the page the user was trying to open, otherwise to their dashboard
-  const from = location.state?.from || '/dashboard'
+  // Go back to the page the user was trying to open, otherwise to the train search home page
+  const from = location.state?.from || '/'
 
   useEffect(() => {
-    if (user) navigate(user.role === 'admin' ? '/admin' : '/dashboard', { replace: true })
+    if (user) navigate(user.role === 'admin' ? '/admin' : '/', { replace: true })
   }, [user, navigate])
 
   const [form, setForm] = useState({ email: '', password: '' })
