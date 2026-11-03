@@ -21,7 +21,7 @@ export default function Register() {
     try {
       await register(form)
       toast.success('Account created!')
-      navigate('/dashboard')
+      navigate('/', { replace: true })
     } catch (err) {
       const msg = err.response?.data?.message || 'Registration failed. Please try again.'
       setError(msg)
