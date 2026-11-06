@@ -78,15 +78,76 @@ exports.getTrain = async (req, res) => {
   }
 };
 
+const VALID_STATUS = ['Active', 'Inactive', 'Delayed', 'Cancelled'];
+const VALID_DAYS   = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+/**
+ * Turn the raw form body into a clean row for the trains table.
+ * Returns { row } or { message } describing the first validation problem.
+ * With partial = true (updates) only the fields that were sent are included.
+ */
+const buildTrainRow = (body, partial = false) => {
+  const str = (v) => (v === undefined || v === null ? undefined : String(v).trim());
+  const row = {};
+
+  const required = {
+    train_number:   ['trainNumber',   'Train number'],
+    train_name:     ['trainName',     'Train name'],
+    source:         ['source',        'Source city'],
+    destination:    ['destination',   'Destination city'],
+    departure_time: ['departureTime', 'Departure time'],
+    arrival_time:   ['arrivalTime',   'Arrival time'],
+  };
+  for (const [col, [key, label]] of Object.entries(required)) {
+    const v = str(body[key]);
+    if (v === undefined && partial) continue;
+    if (!v) return { message: `${label} is required` };
+    row[col] = v;
+  }
+
+  if (body.duration !== undefined) row.duration = str(body.duration) || null;
+
+  if (body.totalDistance !== undefined) {
+    const raw = str(body.totalDistance);
+    if (!raw) row.total_distance = null;
+    else {
+      const n = Number(raw);
+      if (!Number.isFinite(n) || n < 0) return { message: 'Distance must be a positive number' };
+      row.total_distance = n;
+    }
+  }
+
+  if (body.runningDays !== undefined) {
+    const days = Array.isArray(body.runningDays) ? body.runningDays.filter((d) => VALID_DAYS.includes(d)) : [];
+    row.running_days = days;
+  } else if (!partial) {
+    row.running_days = [];
+  }
+
+  if (body.status !== undefined || !partial) {
+    const s = str(body.status) || 'Active';
+    if (!VALID_STATUS.includes(s)) return { message: `Status must be one of: ${VALID_STATUS.join(', ')}` };
+    row.status = s;
+  }
+
+  return { row };
+};
+
+/** Translate database errors into messages an admin can act on. */
+const friendlyDbError = (error, row) => {
+  if (error?.code === '23505') return `Train number ${row.train_number || ''} already exists`.replace('  ', ' ');
+  if (error?.code === '22P02') return 'One of the fields has an invalid value';
+  return error?.message || 'Could not save train';
+};
+
 exports.createTrain = async (req, res) => {
   try {
-    const { trainNumber, trainName, source, destination, departureTime, arrivalTime, duration, totalDistance, runningDays, status } = req.body;
-    const { data: train, error } = await supabase
-      .from('trains')
-      .insert({ train_number: trainNumber, train_name: trainName, source, destination, departure_time: departureTime, arrival_time: arrivalTime, duration, total_distance: totalDistance, running_days: runningDays, status })
-      .select()
-      .single();
-    if (error) throw error;
+    const { row, message } = buildTrainRow(req.body);
+    if (message) return res.status(400).json({ success: false, message });
+
+    const { data: train, error } = await supabase.from('trains').insert(row).select().single();
+    if (error) return res.status(400).json({ success: false, message: friendlyDbError(error, row) });
+
     res.status(201).json({ success: true, train: mapTrain(train) });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
@@ -95,22 +156,14 @@ exports.createTrain = async (req, res) => {
 
 exports.updateTrain = async (req, res) => {
   try {
-    const { trainNumber, trainName, source, destination, departureTime, arrivalTime, duration, totalDistance, runningDays, status } = req.body;
-    const patch = {};
-    if (trainNumber   !== undefined) patch.train_number   = trainNumber;
-    if (trainName     !== undefined) patch.train_name     = trainName;
-    if (source        !== undefined) patch.source         = source;
-    if (destination   !== undefined) patch.destination    = destination;
-    if (departureTime !== undefined) patch.departure_time = departureTime;
-    if (arrivalTime   !== undefined) patch.arrival_time   = arrivalTime;
-    if (duration      !== undefined) patch.duration       = duration;
-    if (totalDistance !== undefined) patch.total_distance = totalDistance;
-    if (runningDays   !== undefined) patch.running_days   = runningDays;
-    if (status        !== undefined) patch.status         = status;
+    const { row: patch, message } = buildTrainRow(req.body, true);
+    if (message) return res.status(400).json({ success: false, message });
+    patch.updated_at = new Date().toISOString();
 
     const { data: train, error } = await supabase
-      .from('trains').update(patch).eq('id', req.params.id).select().single();
-    if (error || !train) return res.status(404).json({ success: false, message: 'Train not found' });
+      .from('trains').update(patch).eq('id', req.params.id).select().maybeSingle();
+    if (error) return res.status(400).json({ success: false, message: friendlyDbError(error, patch) });
+    if (!train) return res.status(404).json({ success: false, message: 'Train not found' });
     res.json({ success: true, train: mapTrain(train) });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });

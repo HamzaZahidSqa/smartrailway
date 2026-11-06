@@ -44,11 +44,15 @@ export default function ManageTrains() {
 
   const save = async (e) => {
     e.preventDefault(); setSaving(true)
+    // Only send the editable fields; the edit form also holds ids, coaches and timestamps
+    const payload = Object.fromEntries(Object.keys(EMPTY).map(k => [k, form[k]]))
     try {
-      if (editing) { await api.put(`/trains/${editing}`, form); toast.success('Train updated') }
-      else         { await api.post('/trains', form);           toast.success('Train added') }
+      if (editing) { await api.put(`/trains/${editing}`, payload); toast.success('Train updated') }
+      else         { await api.post('/trains', payload);           toast.success('Train added') }
       setModal(false); load()
-    } catch (err) { toast.error(err.response?.data?.message || 'Error') }
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message || 'Could not save train', { duration: 6000 })
+    }
     finally { setSaving(false) }
   }
 
